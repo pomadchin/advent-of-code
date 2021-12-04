@@ -195,19 +195,18 @@ object Solution:
       rows match
         // one string => reached the goal
         case List(h) => h
-        case _ => 
+        case _       =>
           // group by col
           // sort by the group (size, char), so 1 is always in the second position
           // the smaller is 0, the larger group is 1
           val next = rows.groupBy(_(col)).map { (c, seq) => (seq.size, c) -> seq }.toSeq.sortBy(_._1).map(_._2)(j)
           iter(next, col + 1, j)
 
-
     (0 to 1).map(iter(input, 0, _)).map(binToDecFl).product
 
   def main(args: Array[String]): Unit =
-    println(s"Q1: ${part1(readInput)}") // 2003336
-    println(s"Q2: ${part2(readInput)}") // 1877139
-    println(s"Q2way: ${part2way(readInput)}") // 1877139
+    println(s"Q1: ${part1(readInput)}")          // 2003336
+    println(s"Q2: ${part2(readInput)}")          // 1877139
+    println(s"Q2way: ${part2way(readInput)}")    // 1877139
     println(s"Q1*: ${part1f(readInput.toList)}") // 2003336
     println(s"Q2*: ${part2f(readInput.toList)}") // 1877139

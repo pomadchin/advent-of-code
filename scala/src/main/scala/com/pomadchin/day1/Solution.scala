@@ -33,7 +33,7 @@ object Solution:
 
   def numberOfIncreasesSliding(a: Array[Int]): Int =
     a.sliding(2, 1).count(a => a(0) < a(1))
-  
+
   def numberOfIncreasesSlidingWindow(a: Array[Int]): Int =
     a.sliding(3, 1).map(_.sum).sliding(2, 1).count(a => a(0) < a(1))
 
