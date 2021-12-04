@@ -1,3 +1,3 @@
-# Advent of Code 2021
+# Advent of Code
 
-[Advent of Code 2021](https://adventofcode.com/2021) written in (hopfully) different languages.
+[Advent of Code](https://adventofcode.com/) written in (hopfully) different languages.
