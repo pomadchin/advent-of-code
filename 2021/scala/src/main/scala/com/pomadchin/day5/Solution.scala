@@ -3,8 +3,7 @@ package com.pomadchin.day5
 import scala.io.Source
 
 object Solution:
-  // use the range generator there?
-  extension (f: Int) def irange(t: Int) = if (f < t) f to t else (t to f).reverse
+  extension (f: Int) def range(t: Int) = f to t by (if (f < t) 1 else -1)
 
   opaque type Point = (Int, Int)
   object Point:
@@ -13,10 +12,8 @@ object Solution:
 
   extension (p: Point)
     def tupled: (Int, Int) = p
-    def _1: Int            = p._1
-    def _2: Int            = p._2
-    def x: Int             = _1
-    def y: Int             = _2
+    def x: Int            = p._1
+    def y: Int            = p._2
 
   opaque type Line = (Point, Point)
   object Line:
@@ -24,19 +21,16 @@ object Solution:
     def apply(start: Point, end: Point): Line = (start, end)
 
   extension (l: Line)
-    def _1: Point             = l._1
-    def _2: Point             = l._2
-    def start: Point          = _1
-    def end: Point            = _2
+    def start: Point          = l._1
+    def end: Point            = l._2
     def isHorizontal: Boolean = l.start.x == l.end.x
     def isVertical: Boolean   = l.start.y == l.end.y
-    def isDiagonal: Boolean   = !isVertical && !isHorizontal
-    def points(withDiagonal: Boolean): Seq[Point] =
+    def points(withDiagonal: Boolean): IterableOnce[Point] =
       val ((x1, y1), (x2, y2)) = l
-      if (isHorizontal) y1.irange(y2).map(Point(x1, _))
-      else if (isVertical) x1.irange(x2).map(Point(_, y1))
-      else if (withDiagonal)(x1.irange(x2)).zip(y1.irange(y2)).map(Point.apply)
-      else Nil
+      if (isHorizontal) y1.range(y2).view.map(Point(x1, _))
+      else if (isVertical) x1.range(x2).view.map(Point(_, y1))
+      else if (withDiagonal)(x1.range(x2)).lazyZip(y1.range(y2)).map(Point(_))
+      else Iterator.empty
 
   def counts(lines: List[Line], withDiagonal: Boolean): Int =
     lines
