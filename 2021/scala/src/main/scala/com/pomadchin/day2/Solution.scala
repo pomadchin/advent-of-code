@@ -13,7 +13,10 @@ object Solution:
       .fromFile(path)
       .getLines
       .map(_.split("\\W+").toList)
-      .map { case List(f, s) => (f, s.toInt) }
+      .flatMap {
+        case List(f, s) => Option((f, s.toInt))
+        case _          => None
+      }
 
   def part1(input: Iterator[(Position, Int)]): Int =
     val (x, y) = input.foldLeft(0 -> 0) { case ((ax, ay), (pos, v)) =>

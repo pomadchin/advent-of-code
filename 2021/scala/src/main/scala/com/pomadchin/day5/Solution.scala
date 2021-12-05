@@ -29,6 +29,8 @@ object Solution:
       val ((x1, y1), (x2, y2)) = l
       if (isHorizontal) y1.range(y2).view.map(Point(x1, _))
       else if (isVertical) x1.range(x2).view.map(Point(_, y1))
+      // zip works, since we have only "correct" lines
+      // every point of which lies on a grid
       else if (withDiagonal)(x1.range(x2)).lazyZip(y1.range(y2)).map(Point(_))
       else Iterator.empty
 
@@ -42,10 +44,55 @@ object Solution:
   def part1(lines: List[Line]): Int = counts(lines, false)
   def part2(lines: List[Line]): Int = counts(lines, true)
 
+  // let's go mutable, as an exercise
+  // map over all lines
+  // filter the dictionary of (point, counts)
+  // all values of counts > 1 are of interest to us
+  import scala.collection.mutable
+  def countsMap(lines: Iterator[Line], withDiagonal: Boolean = false) = {
+    val m: mutable.Map[Point, Int] = new mutable.HashMap()
+    var accumulator                = 0
+    lines.foreach { line =>
+      val ((x1, y1), (x2, y2)) = line
+      var (xi, yi)             = (x1, y1)
+
+      // traversal direction
+      // inc forward, back or stay (in vertical / horizontal case)
+      val stepx = if (x1 < x2) 1 else if (x1 > x2) -1 else 0
+      val stepy = if (y1 < y2) 1 else if (y1 > y2) -1 else 0
+
+      // diffenrent while stop conditions based on the loop direction
+      def cmpx(a: Int, b: Int): Boolean = if (x1 < x2) a <= b else a >= b
+      def cmpy(a: Int, b: Int): Boolean = if (y1 < y2) a <= b else a >= b
+
+      if ((line.isVertical || line.isHorizontal) || withDiagonal)
+        // in a single while loop fill in the hashmap
+        // x and ys are incremented always, since we have only "correct" lines
+        // every point of which lies on a grid
+        while cmpx(xi, x2) && cmpy(yi, y2) do
+          val p = Point(xi, yi)
+          val c = m.get(p).getOrElse(0)
+          m.put(p, c + 1)
+          yi += stepy
+          xi += stepx
+
+    }
+
+    // fold map into accumulator, but I'm using foreach
+    m.foreach { (_, value) => if (value > 1) accumulator += 1 }
+    accumulator
+  }
+
+  def part1nf(lines: Iterator[Line]): Int = countsMap(lines)
+  def part2nf(lines: Iterator[Line]): Int = countsMap(lines, true)
+
   def readInput(path: String = "src/main/resources/day5/puzzle1.txt"): List[Line] =
     Source
       .fromFile(path)
       .getLines
       .map(_.split(" -> ").toList.map(_.split(",").toList.map(_.toInt)))
-      .map { case List(List(x1, y1), List(x2, y2)) => Line(Point(x1, y1), Point(x2, y2)) }
+      .flatMap {
+        case List(List(x1, y1), List(x2, y2)) => Option(Line(Point(x1, y1), Point(x2, y2)))
+        case _                                => None
+      }
       .toList
