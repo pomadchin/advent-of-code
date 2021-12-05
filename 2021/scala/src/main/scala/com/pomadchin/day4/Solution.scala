@@ -34,10 +34,10 @@ case class Board(cells: List[List[Int]], marked: List[List[Boolean]]):
   def isCompleted: Boolean = marked.exists(_.forall(identity)) || marked.transpose.exists(_.forall(identity))
 
 object Solution:
-  def readInput: Input =
+  def readInput(path: String = "src/main/resources/day4/puzzle1.txt"): Input =
     val lines =
       Source
-        .fromFile("src/main/resources/day4/puzzle1.txt")
+        .fromFile(path)
         .getLines
         .toArray
 
@@ -54,8 +54,3 @@ object Solution:
         }
 
     Input(numbers, boards)
-
-  def main(args: Array[String]): Unit =
-    val input = readInput
-    println(s"Q1: ${input.part1}") // 35711
-    println(s"Q2: ${input.part2}") // 5586

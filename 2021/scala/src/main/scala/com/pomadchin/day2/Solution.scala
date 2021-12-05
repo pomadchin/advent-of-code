@@ -8,14 +8,14 @@ object Solution:
   val UP      = "up"
   val DOWN    = "down"
 
-  def readInput: Iterator[(Position, Int)] =
+  def readInput(path: String = "src/main/resources/day2/puzzle1.txt"): Iterator[(Position, Int)] =
     Source
-      .fromFile("src/main/resources/day2/puzzle1.txt")
+      .fromFile(path)
       .getLines
       .map(_.split("\\W+").toList)
       .map { case List(f, s) => (f, s.toInt) }
 
-  def calculate(input: Iterator[(Position, Int)]): Int =
+  def part1(input: Iterator[(Position, Int)]): Int =
     val (x, y) = input.foldLeft(0 -> 0) { case ((ax, ay), (pos, v)) =>
       val x = pos match
         case FORWARD => v
@@ -31,7 +31,7 @@ object Solution:
 
     x * y
 
-  def calculatePart2(input: Iterator[(Position, Int)]): Int =
+  def part2(input: Iterator[(Position, Int)]): Int =
     val (x, y, a) = input.foldLeft((0, 0, 0)) { case ((ax, ay, aa), (pos, v)) =>
       val a = pos match
         case UP   => v
@@ -46,7 +46,3 @@ object Solution:
     }
 
     x * y
-
-  def main(args: Array[String]): Unit =
-    println(s"Q1: ${calculate(readInput)}")
-    println(s"Q2: ${calculatePart2(readInput)}")

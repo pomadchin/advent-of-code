@@ -12,9 +12,9 @@ object Solution:
   val shift                          = '0'
   def charAt(s: String, i: Int): Int = if (i < s.length) s.charAt(i) - shift else -1
 
-  def readInput: Array[String] =
+  def readInput(path: String = "src/main/resources/day3/puzzle1.txt"): Array[String] =
     Source
-      .fromFile("src/main/resources/day3/puzzle1.txt")
+      .fromFile(path)
       .getLines
       .toArray
 
@@ -203,10 +203,3 @@ object Solution:
           iter(next, col + 1, j)
 
     (0 to 1).map(iter(input, 0, _)).map(binToDecFl).product
-
-  def main(args: Array[String]): Unit =
-    println(s"Q1: ${part1(readInput)}")          // 2003336
-    println(s"Q2: ${part2(readInput)}")          // 1877139
-    println(s"Q2way: ${part2way(readInput)}")    // 1877139
-    println(s"Q1*: ${part1f(readInput.toList)}") // 2003336
-    println(s"Q2*: ${part2f(readInput.toList)}") // 1877139

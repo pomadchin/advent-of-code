@@ -15,16 +15,5 @@ scalacOptions ++= Seq(
   "-Ykind-projector"
 )
 
-resolvers ++= Seq(
-  Resolver.sonatypeRepo("releases"),
-  Resolver.sonatypeRepo("snapshots")
-)
-
-fork := true
-
-libraryDependencies ++= Seq(
-  "org.typelevel" %% "cats-core"   % "2.7.0",
-  "org.typelevel" %% "cats-mtl"    % "1.2.1",
-  "org.typelevel" %% "cats-effect" % "3.1.1",
-  "org.scalatest" %% "scalatest"   % "3.2.9" % Test
-)
+libraryDependencies += "org.scalameta" %% "munit" % "0.7.29" % Test
+testFrameworks += new TestFramework("munit.Framework")

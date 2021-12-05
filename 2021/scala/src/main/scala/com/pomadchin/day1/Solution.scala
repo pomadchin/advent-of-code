@@ -3,14 +3,14 @@ package com.pomadchin.day1
 import scala.io.Source
 
 object Solution:
-  def readNumbers: Array[Int] =
+  def readInput(path: String = "src/main/resources/day1/puzzle1.txt"): Array[Int] =
     Source
-      .fromFile("src/main/resources/day1/puzzle1.txt")
+      .fromFile(path)
       .getLines
       .map(_.toInt)
       .toArray
 
-  def numberOfIncreasesLoop(a: Array[Int]): Int =
+  def part1(a: Array[Int]): Int =
     var (counts, i, prev) = (0, 1, a(0))
 
     while i < a.length do
@@ -20,7 +20,7 @@ object Solution:
 
     counts
 
-  def numberOfIncreasesLoopWindow(a: Array[Int]): Int =
+  def part2(a: Array[Int]): Int =
     var (counts, i, prev) = (0, 1, a.take(3).sum)
 
     while i < a.length - 2 do
@@ -31,15 +31,8 @@ object Solution:
 
     counts
 
-  def numberOfIncreasesSliding(a: Array[Int]): Int =
+  def part1f(a: Array[Int]): Int =
     a.sliding(2, 1).count(a => a(0) < a(1))
 
-  def numberOfIncreasesSlidingWindow(a: Array[Int]): Int =
+  def part2f(a: Array[Int]): Int =
     a.sliding(3, 1).map(_.sum).sliding(2, 1).count(a => a(0) < a(1))
-
-  def main(args: Array[String]): Unit =
-    val input = readNumbers
-    println(s"Q1: ${numberOfIncreasesLoop(input)}")
-    println(s"Q1*: ${numberOfIncreasesSliding(input)}")
-    println(s"Q2: ${numberOfIncreasesLoopWindow(input)}")
-    println(s"Q2*: ${numberOfIncreasesSlidingWindow(input)}")
