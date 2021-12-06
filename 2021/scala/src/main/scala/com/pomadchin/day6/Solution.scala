@@ -27,6 +27,7 @@ object Solution:
     part1rec(input, d).length
 
   def part2(input: List[Int], d: Int): Long =
+    // state of frequences
     val initState: Map[Int, Long] =
       input
         .groupBy(identity)
