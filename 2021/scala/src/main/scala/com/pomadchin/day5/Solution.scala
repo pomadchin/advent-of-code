@@ -58,18 +58,23 @@ object Solution:
 
       // traversal direction
       // inc forward, back or stay (in vertical / horizontal case)
-      val stepx = if (x1 < x2) 1 else if (x1 > x2) -1 else 0
-      val stepy = if (y1 < y2) 1 else if (y1 > y2) -1 else 0
+      val stepx = math.signum(x2 - x1) // if (x1 < x2) 1 else if (x1 > x2) -1 else 0
+      val stepy = math.signum(y2 - y1) // if (y1 < y2) 1 else if (y1 > y2) -1 else 0
 
       // diffenrent while stop conditions based on the loop direction
-      def cmpx(a: Int, b: Int): Boolean = if (x1 < x2) a <= b else a >= b
-      def cmpy(a: Int, b: Int): Boolean = if (y1 < y2) a <= b else a >= b
+      // def cmpx(a: Int, b: Int): Boolean = if (x1 < x2) a <= b else a >= b
+      // def cmpy(a: Int, b: Int): Boolean = if (y1 < y2) a <= b else a >= b
+      // WARN: stop condition is reworked: while (xi, yi) != (x2 + stepx, y2 + stepy); break the loop when visited all points
 
       if ((line.isVertical || line.isHorizontal) || withDiagonal)
         // in a single while loop fill in the hashmap
         // x and ys are incremented always, since we have only "correct" lines
         // every point of which lies on a grid
-        while cmpx(xi, x2) && cmpy(yi, y2) do
+        // format: off
+        // weirdly scalafmt incorrectly formats it
+        // while cmpx(xi, x2) && cmpy(yi, y2) do
+        while ((xi, yi) != (x2 + stepx, y2 + stepy)) do
+        // format: on
           val p = Point(xi, yi)
           val c = m.get(p).getOrElse(0)
           m.put(p, c + 1)
