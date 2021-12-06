@@ -82,3 +82,31 @@ object Solution:
         case _ =>
     }
     state.map(_._2).sum
+
+  def part2nfa(input: List[Int], d: Int): Long =
+    // position means the state
+    val a: Array[Long] = Array.fill(9)(-1) // -1 means no element is inside
+    input.foreach { i => a(i) = math.max(0, a(i)) + 1L }
+
+    cfor(0)(_ < d, _ + 1) { i =>
+      val c0 = a(0)
+      // erase c0 if necessary
+      if (c0 != -1) a(0) = -1
+      // shift elements to the left
+      cfor(1)(_ < 9, _ + 1) { j =>
+        a(j - 1) = a(j)
+        // don't forget to erase it's previous position
+        a(j) = -1
+      }
+      // if there is c0, adjust the array
+      if (c0 > 0)
+        // fill in 6
+        a(6) = math.max(0, a(6)) + c0
+        // add 8
+        a(8) = c0
+    }
+
+    // we can fold, but i'm using foreach here
+    var accumulator = 0L
+    a.foreach { accumulator += math.max(0, _) }
+    accumulator

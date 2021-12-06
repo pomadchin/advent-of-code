@@ -12,3 +12,5 @@ class SolutionTest extends munit.FunSuite:
   test("Q2") { assertEquals(Solution.part2(input, 256), 1595779846729L) }
   test("Q2Example**") { assertEquals(Solution.part2nf(inputExample, 18), 26L) }
   test("Q2**") { assertEquals(Solution.part2nf(input, 256), 1595779846729L) }
+  test("Q2Example***") { assertEquals(Solution.part2nfa(inputExample, 18), 26L) }
+  test("Q2***") { assertEquals(Solution.part2nfa(input, 256), 1595779846729L) }
