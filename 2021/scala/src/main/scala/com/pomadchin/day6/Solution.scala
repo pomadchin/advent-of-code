@@ -2,6 +2,7 @@ package com.pomadchin.day6
 
 import scala.io.Source
 import scala.annotation.tailrec
+import com.pomadchin.util.CforMacros.cfor
 
 object Solution:
 
@@ -40,7 +41,7 @@ object Solution:
       if (days == 0) state
       else
         val c0 = state.get(0)
-        c0 match {
+        c0 match
           case Some(c0) =>
             // if there is a zero, decrement all but zero
             val noZerosState = (state - 0).map { (t, c) => (t - 1, c) }
@@ -55,6 +56,29 @@ object Solution:
           case _ =>
             // if no zeros in the freqs state, decrement all
             part2rec(state.map { (t, c) => (t - 1, c) }, days - 1)
-        }
 
     part2rec(initState, d).map(_._2).sum
+
+  import scala.collection.mutable
+  def part2nf(input: List[Int], d: Int): Long =
+    val state: mutable.Map[Int, Long] = mutable.Map()
+    input.foreach { i => state.put(i, state.get(i).getOrElse(0L) + 1L) }
+
+    cfor(0)(_ < d, _ + 1) { i =>
+      val c0 = state.get(0)
+      state.remove(0)
+
+      cfor(1)(_ < 9, _ + 1) { j =>
+        state.get(j).foreach { c =>
+          state.put(j - 1, c)
+          state.remove(j)
+        }
+      }
+      c0 match
+        case Some(c0) =>
+          state.put(6, state.get(6).getOrElse(0L) + c0)
+          state.put(8, c0)
+
+        case _ =>
+    }
+    state.map(_._2).sum
