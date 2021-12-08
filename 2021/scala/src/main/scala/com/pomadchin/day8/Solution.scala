@@ -172,7 +172,7 @@ object Solution:
       strToInt(r.map { d => mapr(d.toSet) }.mkString)
     }.sum
 
-  def strToInt(str: String, digits: Int = 4): Int =
+  def strToInt(str: String): Int =
     ((str.length - 1) to 0 by -1)
       .map { i => math.pow(10, i).toInt }
       .zip(str.toList.map(_.asDigit))
