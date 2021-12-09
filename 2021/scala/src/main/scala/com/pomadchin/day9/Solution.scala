@@ -4,8 +4,11 @@ import com.pomadchin.util.CforMacros.cfor
 
 import scala.io.Source
 import scala.collection.mutable
+import scala.annotation.tailrec
 
 object Solution:
+
+  type P = (Int, Int)
 
   opaque type Table = Array[Array[Int]]
   object Table:
@@ -107,6 +110,24 @@ object Solution:
     }
 
     result.sortBy(e => -e).take(3).product
+
+  def part2fbfs(table: Table): Int =
+    @tailrec
+    def bfs(a: Set[P], marked: Set[P]): Set[(Int, Int)] =
+      if a.nonEmpty then
+        val next = a.flatMap((r, c) => table.adj(r, c).filter((r, c) => table.get(r, c) < 9).filter(!marked.contains(_)))
+        bfs(next, marked ++ next)
+      else marked
+
+    val vertices = (0 until table.rows).flatMap { r =>
+      (0 until table.cols).flatMap { c =>
+        val v = table.get(r, c)
+        if (table.adj(r, c).forall((r, c) => v < table.get(r, c))) Option(r -> c)
+        else None
+      }
+    }
+
+    vertices.map(t => bfs(Set(t), Set(t)).size).sortBy(-_).take(3).product
 
   // unfortunately we don't need diagonals ):
   def adj(r: Int, c: Int, table: Table, diagonal: Boolean = false): List[(Int, Int)] =
