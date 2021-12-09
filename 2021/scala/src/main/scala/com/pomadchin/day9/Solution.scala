@@ -65,7 +65,7 @@ object Solution:
           val basin = mutable.ListBuffer[Int]()
           // add low point
           basin += v
-          def dfs(row: Int, col: Int): Unit = {
+          def dfs(row: Int, col: Int): Unit =
             // visit the current vertex
             marked(row)(col) = true
             table.adj(row, col).foreach { (ra, ca) =>
@@ -77,15 +77,14 @@ object Solution:
                 }
               }
             }
-            // marked(row)(col) = false
-          }
+          // marked(row)(col) = false
 
           dfs(r, c)
           result += (basin.toList.length)
         }
       }
     }
-    result.sortBy(e => -e).take(3).product
+    result.sortBy(-_).take(3).product
   // (0 until 3).map(_ => result.dequeue).product
 
   def part2f(table: Table): Int =
@@ -93,9 +92,9 @@ object Solution:
     val result = (0 until table.rows).flatMap { r =>
       (0 until table.cols).flatMap { c =>
         val v = table.get(r, c)
-        if (table.adj(r, c).forall((r, c) => v < table.get(r, c))) {
+        if (table.adj(r, c).forall((r, c) => v < table.get(r, c)))
           // not tailrec
-          def dfsrec(row: Int, col: Int, acc: List[Int]): List[Int] = {
+          def dfsrec(row: Int, col: Int, acc: List[Int]): List[Int] =
             marked(row)(col) = true
             table.adj(row, col).flatMap { (ra, ca) =>
               if (!marked(ra)(ca)) {
@@ -103,13 +102,12 @@ object Solution:
                 if (va < 9) dfsrec(ra, ca, va :: acc) else acc
               } else acc
             }
-          }
           dfsrec(r, c, v :: Nil).length :: Nil
-        } else Nil
+        else Nil
       }
     }
 
-    result.sortBy(e => -e).take(3).product
+    result.sortBy(-_).take(3).product
 
   def part2fbfs(table: Table): Int =
     @tailrec
@@ -129,63 +127,54 @@ object Solution:
 
     vertices.map(t => bfs(Set(t), Set(t)).size).sortBy(-_).take(3).product
 
-  // unfortunately we don't need diagonals ):
+  // unfortunately we don't need diagonals ): TODO: make it immutable
   def adj(r: Int, c: Int, table: Table, diagonal: Boolean = false): List[(Int, Int)] =
     val result = mutable.ListBuffer[(Int, Int)]()
     // there is a top row present
-    if (r > 0) {
+    if r > 0 then
       val rt = r - 1
       // add edge between the current and top mid
       result += (rt -> c);
       // top left
-      if (diagonal) {
-        if (c > 0) {
+      if diagonal then
+        if c > 0 then
           val cl = c - 1
           // add edge between the current and top left
           result += (rt -> cl)
-        }
         // top right
-        if (c < table.cols - 1) {
+        if c < table.cols - 1 then
           val cr = c + 1
           // add edge between the current and top right
           result += (rt -> cr)
-        }
-      }
-    }
+
     // current row
-    if (c > 0) {
+    if c > 0 then
       val cl = c - 1
       // add edge between the current and current left
       result += (r -> cl)
-    }
     // add edge between the current and top mid
     // skip reflective vertices
     // result += (r -> c)
     // top right
-    if (c < table.cols - 1) {
+    if c < table.cols - 1 then
       val cr = c + 1
       // add edge between the current and current right
       result += (r -> cr)
-    }
     // there is a bottom row present
-    if (r < table.rows - 1) {
+    if r < table.rows - 1 then
       val rb = r + 1
       // add edge between the current and bottom mid
       result += (rb -> c)
       // bottom left
-      if (diagonal) {
-        if (c > 0) {
+      if diagonal then
+        if c > 0 then
           val cl = c - 1;
           // add edge between the current and top left
           result += (rb -> cl)
-        }
         // top right
-        if (c < table.cols - 1) {
+        if c < table.cols - 1 then
           val cr = c + 1;
           // add edge between the current and top right
           result += (rb -> cr)
-        }
-      }
-    }
 
     result.toList
