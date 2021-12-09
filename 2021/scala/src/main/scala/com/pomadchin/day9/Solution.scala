@@ -3,7 +3,7 @@ package com.pomadchin.day9
 import com.pomadchin.util.CforMacros.cfor
 
 import scala.io.Source
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable
 
 object Solution:
 
@@ -28,7 +28,6 @@ object Solution:
       .map(_.toCharArray.map(_.asDigit))
       .toArray
 
-  import scala.collection.mutable
   def part1(table: Table): Int =
     val result = mutable.ListBuffer[Int]()
 
@@ -42,8 +41,18 @@ object Solution:
 
     result.sum
 
+  def part1f(table: Table): Int =
+    val res = (0 until table.rows).flatMap { r =>
+      (0 until table.cols).flatMap { c =>
+        val v = table.get(r, c)
+        if (table.adj(r, c).forall((r, c) => v < table.get(r, c))) Option(v + 1)
+        else None
+      }
+    }
+    res.sum
+
   def part2(table: Table): Int =
-    val result = mutable.ListBuffer[Int]()
+    val result = new mutable.PriorityQueue[Int]()
     val marked = Array.ofDim[Boolean](table.rows, table.cols)
 
     cfor(0)(_ < table.rows, _ + 1) { r =>
@@ -69,8 +78,30 @@ object Solution:
           }
 
           dfs(r, c)
-          result += basin.toList.length
+          result.enqueue(basin.toList.length)
         }
+      }
+    }
+    (0 until 3).map(_ => result.dequeue).product
+
+  def part2f(table: Table): Int =
+    val marked = Array.ofDim[Boolean](table.rows, table.cols)
+    val result = (0 until table.rows).flatMap { r =>
+      (0 until table.cols).flatMap { c =>
+        val v = table.get(r, c)
+        if (table.adj(r, c).forall((r, c) => v < table.get(r, c))) {
+          // not tailrec
+          def dfsrec(row: Int, col: Int, acc: List[Int]): List[Int] = {
+            marked(row)(col) = true
+            table.adj(row, col).flatMap { (ra, ca) =>
+              if (!marked(ra)(ca)) {
+                val va = table.get(ra, ca)
+                if (va < 9) dfsrec(ra, ca, va :: acc) else acc
+              } else acc
+            }
+          }
+          dfsrec(r, c, v :: Nil).length :: Nil
+        } else Nil
       }
     }
 
