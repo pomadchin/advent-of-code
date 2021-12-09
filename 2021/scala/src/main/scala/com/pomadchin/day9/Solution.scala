@@ -52,7 +52,7 @@ object Solution:
     res.sum
 
   def part2(table: Table): Int =
-    val result = new mutable.PriorityQueue[Int]()
+    val result = mutable.ListBuffer[Int]()// new mutable.PriorityQueue[Int]()
     val marked = Array.ofDim[Boolean](table.rows, table.cols)
 
     cfor(0)(_ < table.rows, _ + 1) { r =>
@@ -78,11 +78,12 @@ object Solution:
           }
 
           dfs(r, c)
-          result.enqueue(basin.toList.length)
+          result += (basin.toList.length)
         }
       }
     }
-    (0 until 3).map(_ => result.dequeue).product
+    result.sortBy(e => -e).take(3).product
+    // (0 until 3).map(_ => result.dequeue).product
 
   def part2f(table: Table): Int =
     val marked = Array.ofDim[Boolean](table.rows, table.cols)
