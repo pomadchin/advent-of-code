@@ -32,11 +32,11 @@ object Solution:
     '>' -> 4
   )
 
-  def part1(input: Iterator[String]): Int =
+  def part1(input: Iterator[String]): Long =
     input
       .map { str =>
         str.toCharArray.toList
-          .foldLeft(List.empty[Char] -> 0) { case ((acc, score), c) =>
+          .foldLeft(List.empty[Char] -> 0L) { case ((acc, score), c) =>
             if (score == 0) {
               c match
                 // using list as a stack
