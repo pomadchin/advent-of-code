@@ -8,3 +8,73 @@ object Solution:
     Source
       .fromFile(path)
       .getLines
+
+  val scores: Map[Char, Int] = Map(
+    ')' -> 3,
+    ']' -> 57,
+    '}' -> 1197,
+    '>' -> 25137
+  )
+
+  val matching: Map[Char, Char] = Map(
+    ')' -> '(',
+    ']' -> '[',
+    '}' -> '{',
+    '>' -> '<'
+  )
+
+  val matchingr: Map[Char, Char] = matching.map((k, v) => (v, k))
+
+  val scoresr: Map[Char, Int] = Map(
+    ')' -> 1,
+    ']' -> 2,
+    '}' -> 3,
+    '>' -> 4
+  )
+
+  def part1(input: Iterator[String]): Int =
+    input
+      .map { str =>
+        str.toCharArray.toList
+          .foldLeft(List.empty[Char] -> 0) { case ((acc, score), c) =>
+            if (score == 0) {
+              c match
+                // using list as a stack
+                case '(' | '[' | '{' | '<' => (c :: acc, score)
+                case _ =>
+                  val op = acc.head
+                  // skip
+                  if (matching(c) == op) (acc.tail, score)
+                  else (Nil, scores(c))
+            } else (acc -> score)
+          }
+      }
+      .toList
+      .map(_._2)
+      .sum
+
+  def part2(input: Iterator[String]): Long =
+    val res =
+      input
+        .flatMap { str =>
+          val (res, _) =
+            str.toCharArray.toList
+              .foldLeft(List.empty[Char] -> 0) { case ((acc, score), c) =>
+                if (score == 0) {
+                  c match
+                    // using list as a stack
+                    case '(' | '[' | '{' | '<' => (c :: acc, score)
+                    case _ =>
+                      val op = acc.head
+                      // skip
+                      if (matching(c) == op) (acc.tail, score)
+                      else (Nil, scores(c))
+                } else (acc -> score)
+              }
+
+          if res.nonEmpty then Some(res.foldLeft(0L) { (acc, c) => acc * 5 + scoresr(matchingr(c)) })
+          else None
+        }
+        .toList
+        .sorted
+    res(res.length / 2)
