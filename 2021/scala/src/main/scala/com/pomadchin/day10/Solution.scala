@@ -32,23 +32,27 @@ object Solution:
     '>' -> 4
   )
 
+  extension (str: String)
+    // left is the stack of opening parentheses
+    // the right is score
+    // non empty stack is always scored 0
+    def stackScored: (List[Char], Long) =
+      str.foldLeft(List.empty[Char] -> 0L) { case ((acc, score), c) =>
+        if score == 0 then
+          c match
+            // using list as a stack
+            case '(' | '[' | '{' | '<' => (c :: acc, score)
+            case _ =>
+              val op = acc.head
+              // skip
+              if (matching(c) == op) (acc.tail, score)
+              else (Nil, scores(c))
+        else (acc -> score)
+      }
+
   def part1(input: Iterator[String]): Long =
     input
-      .map { str =>
-        str.toCharArray.toList
-          .foldLeft(List.empty[Char] -> 0L) { case ((acc, score), c) =>
-            if (score == 0) {
-              c match
-                // using list as a stack
-                case '(' | '[' | '{' | '<' => (c :: acc, score)
-                case _ =>
-                  val op = acc.head
-                  // skip
-                  if (matching(c) == op) (acc.tail, score)
-                  else (Nil, scores(c))
-            } else (acc -> score)
-          }
-      }
+      .map(_.stackScored)
       .toList
       .map(_._2)
       .sum
@@ -57,21 +61,7 @@ object Solution:
     val res =
       input
         .flatMap { str =>
-          val (res, _) =
-            str.toCharArray.toList
-              .foldLeft(List.empty[Char] -> 0) { case ((acc, score), c) =>
-                if (score == 0) {
-                  c match
-                    // using list as a stack
-                    case '(' | '[' | '{' | '<' => (c :: acc, score)
-                    case _ =>
-                      val op = acc.head
-                      // skip
-                      if (matching(c) == op) (acc.tail, score)
-                      else (Nil, scores(c))
-                } else (acc -> score)
-              }
-
+          val (res, _) = str.stackScored
           if res.nonEmpty then Some(res.foldLeft(0L) { (acc, c) => acc * 5 + scoresr(matchingr(c)) })
           else None
         }
