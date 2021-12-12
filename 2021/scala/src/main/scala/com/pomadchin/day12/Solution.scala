@@ -21,9 +21,8 @@ class Digraph:
 
   def adjList(v: Vertex): List[Vertex] = adj.get(v).fold(Nil)(_.toList)
 
-  def vertices: List[Vertex] = adj.keys.toList
-  def getV: Int              = adj.keys.size
-  def getE: Int              = E
+  def getV: Int = adj.keys.size
+  def getE: Int = E
 
   override def toString: String =
     s"""
@@ -63,6 +62,13 @@ object DFS:
   def dfs2(G: Digraph): Int =
     val paths: mutable.Set[List[Vertex]] = mutable.Set()
     dfs2(G, List(StartVertex), paths)
+    paths.map(_.reverse.mkString(",")).size
+
+  def dfs3(G: Digraph): Int =
+    val marked: mutable.Map[Vertex, Boolean] = mutable.Map()
+    val paths: mutable.Set[List[Vertex]]     = mutable.Set()
+    dfs3(G, List(StartVertex), paths, marked)
+    // paths.map(_.reverse.mkString(",")).toList.sorted.map(println).size
     paths.size
 
   // clsssic DFS
@@ -87,6 +93,11 @@ object DFS:
     d.distinct.size == d.size
   }
 
+  def smallCavesUnique1: List[Vertex] => Boolean = { seq =>
+    val d = seq.filterNot(_.isBig)
+    (d.distinct.size >= (d.size - 1))
+  }
+
   private def dfs2(G: Digraph, path: List[Vertex], paths: mutable.Set[List[Vertex]]): Unit =
     val v = path.head
     if (v == EndVertex) paths += path
@@ -102,11 +113,32 @@ object DFS:
         // List(end, A, c, A, b, A, c, A, start) -- found the path
         // List(b, A, b, A, c, A, start) -- went up the stack call, marked end, A, c - unmarked
         // List(A, b, A, b, A, c, A, start) -- going deeper, adding A which seems fine, we can visit A multiple times
-        // List(c, A, b, A, b, A, c, A, start) -- adding c, becuase it is unmarked! - collision; q: how to disambiguate unvisits? a: the easiest way to track visits through the visited paths; in general this approach leads to difficulties in visiting same vertices more than once
+        // List(c, A, b, A, b, A, c, A, start) -- adding c, becuase it is unmarked! - collision;
+        // * q: how to disambiguate unvisits?
+        // * a: the easiest way to track visits through the visited paths;
+        //  * in general this approach leads to difficulties in visiting same vertices more than once
+        //  * but also see dfs3, we check that the adjacent vertix is not start + (unmarked | unique in the path)
+        //  * as we know, being unmarked is not enough, let's check that we have only 1 at most already visited but unmarked small vertex
         // List(A, c, A, b, A, b, A, c, A, start) -- adding A which seems fine
         // List(end, A, c, A, b, A, b, A, c, A, start) -- we visited more than a single small cave twice - a bad collision result
         if !w.isStart && (w.isBig || !path.contains(w) || smallCavesUnique(path)) then dfs2(G, w :: path, paths)
       }
+
+  private def dfs3(G: Digraph, path: List[Vertex], paths: mutable.Set[List[Vertex]], marked: mutable.Map[Vertex, Boolean]): Unit =
+    val v = path.head
+    // visit
+    if (!v.isBig) marked(v) = true
+    if (v == EndVertex) paths += path
+    else
+      G.adjList(v).foreach { w =>
+        // visit unvisited
+        if !w.isStart && (marked.get(w).isEmpty || !marked(w) || smallCavesUnique(path)) then
+          if (smallCavesUnique1(path))
+            dfs3(G, w :: path, paths, marked)
+      }
+
+    // unset
+    marked(v) = false
 
 object Solution:
   import Digraph.*
@@ -129,3 +161,6 @@ object Solution:
 
   def part2(G: Digraph) =
     DFS.dfs2(G)
+
+  def part2m(G: Digraph) =
+    DFS.dfs3(G)
