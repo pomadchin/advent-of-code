@@ -4,6 +4,7 @@ import scala.io.Source
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
+// here, Digraph is replacable by the .groupBy
 class Digraph:
   import Digraph.*
   // number of edges
@@ -34,7 +35,6 @@ class Digraph:
     """.stripMargin
 
 object Digraph:
-  // name is the string name of a cave, and big a flag is it a big cave so we can visit it multiple times
   opaque type Vertex = String
   object Vertex:
     def apply(s: String): Vertex = s
@@ -62,13 +62,14 @@ object DFS:
   def dfs2(G: Digraph): Int =
     val paths: mutable.Set[List[Vertex]] = mutable.Set()
     dfs2(G, List(StartVertex), paths)
-    paths.map(_.reverse.mkString(",")).size
+    // paths.map(_.reverse.mkString(",")).toList.sorted.map(println)
+    paths.size
 
   def dfs3(G: Digraph): Int =
     val marked: mutable.Map[Vertex, Boolean] = mutable.Map()
     val paths: mutable.Set[List[Vertex]]     = mutable.Set()
     dfs3(G, List(StartVertex), paths, marked)
-    // paths.map(_.reverse.mkString(",")).toList.sorted.map(println).size
+    // paths.map(_.reverse.mkString(",")).toList.sorted.map(println)
     paths.size
 
   // clsssic DFS
