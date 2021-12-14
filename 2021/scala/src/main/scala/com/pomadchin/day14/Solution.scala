@@ -1,6 +1,7 @@
 package com.pomadchin.day14
 
 import scala.io.Source
+import scala.collection.mutable
 
 object Solution:
   def readInput(path: String = "src/main/resources/day14/puzzle1.txt"): (Map[Char, Long], Map[String, Long], List[(String, Char)]) =
@@ -16,8 +17,8 @@ object Solution:
         .mapValues(_.length.toLong)
         .toMap
 
-    // suffixes counts
-    val suffixes = template.sliding(2).toList.map { (_, 1) }.groupBy(_._1).view.mapValues(_.map(_._2).sum.toLong).toMap
+    // initial suffixes of length 2 counts
+    val suffixes = template.sliding(2).toList.map((_, 1)).groupBy(_._1).view.mapValues(_.map(_._2).sum.toLong).toMap
 
     // instructions
     val instructions =
@@ -32,29 +33,27 @@ object Solution:
 
     (counts, suffixes, instructions)
 
-  import scala.collection.mutable
-
   def part1(input: (Map[Char, Long], Map[String, Long], List[(String, Char)]), steps: Int): Long =
     val (counts, suffixes, instructions)       = input
     val countsMutable: mutable.Map[Char, Long] = counts.to(mutable.Map)
     var suffixesMutable                        = suffixes
 
-    // the idea on everystep to build the new suffixes array
+    // the idea on every step to build the new suffixes array
     // every suffix may be there more than once
-    // the number of replacements accumulate
+    // the number of replacements accumulate (and match the amount of suffixes)
     (0 until steps).map { s =>
       val suffixesNew = mutable.Map[String, Long]()
       // for each value find a matching rule
       suffixesMutable.foreach { (k, v) =>
         instructions.filter(_._1 == k).foreach { (from, to) =>
           // increment counts in the counts map
-          countsMutable.put(to, countsMutable.get(to).getOrElse(0L) + v)
+          countsMutable.put(to, countsMutable.getOrElse(to, 0L) + v)
           // fill in the new suffixes array
           val ft = s"${from.head}$to"
           val tf = s"$to${from.last}"
           // carefull with it
-          suffixesNew.put(ft, suffixesNew.get(ft).getOrElse(0L) + v)
-          suffixesNew.put(tf, suffixesNew.get(tf).getOrElse(0L) + v)
+          suffixesNew.put(ft, suffixesNew.getOrElse(ft, 0L) + v)
+          suffixesNew.put(tf, suffixesNew.getOrElse(tf, 0L) + v)
         }
       }
 
@@ -62,8 +61,8 @@ object Solution:
       suffixesMutable = suffixesNew.toMap
     }
 
-    val srt = countsMutable.toList.map(_._2)
-    srt.max - srt.min
+    val res = countsMutable.values
+    res.max - res.min
 
   def part1f(input: (Map[Char, Long], Map[String, Long], List[(String, Char)]), steps: Int): Long =
     val (counts, suffixes, instructions) = input
@@ -90,5 +89,5 @@ object Solution:
       }
     }
 
-    val srt = countsNew.toList.map(_._2)
-    srt.max - srt.min
+    val res = countsNew.values
+    res.max - res.min
