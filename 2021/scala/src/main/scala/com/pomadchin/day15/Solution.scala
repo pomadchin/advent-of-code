@@ -9,45 +9,30 @@ object Solution:
     def apply(s: Seq[Seq[Int]]): Table = s
 
   extension (t: Table)
-    def toSeq: Seq[Seq[Int]]                = t
-    def cols: Int                           = toSeq(0).length
-    def rows: Int                           = toSeq.length
-    def tableSize: Int                      = cols * rows
-    def indexToGrid(index: Int): (Int, Int) = row(index) -> col(index)
-    def index(row: Int, col: Int): Int      = row * cols + col
-    def col(index: Int): Int                = index       % cols
-    def row(index: Int): Int                = index / cols
-    def get(row: Int, col: Int): Int        = toSeq(row)(col)
-    def getSafe(row: Int, col: Int): Int    = toSeq(row % rows)(col % cols)
-    def get(index: Int): Int                = toSeq(row(index))(col(index))
-    def adj(index: Int): List[(Int, Int)]   = adj(row(index), col(index))
+    def toSeq: Seq[Seq[Int]]              = t
+    def cols: Int                         = toSeq(0).length
+    def rows: Int                         = toSeq.length
+    def tableSize: Int                    = cols * rows
+    def index(row: Int, col: Int): Int    = row * cols + col
+    def col(index: Int): Int              = index % cols
+    def row(index: Int): Int              = index / cols
+    def get(row: Int, col: Int): Int      = toSeq(row)(col)
+    def getSafe(row: Int, col: Int): Int  = toSeq(row % rows)(col % cols)
+    def get(index: Int): Int              = toSeq(row(index))(col(index))
+    def adj(index: Int): List[(Int, Int)] = adj(row(index), col(index))
     def adj(row: Int, col: Int): List[(Int, Int)] =
       List((-1, 0), (1, 0), (0, -1), (0, 1))
         .map((dr, dc) => (row + dr, col + dc))
         .filter((r, c) => r >= 0 && r < rows && c >= 0 && c < cols)
 
-  def readInput(path: String = "src/main/resources/day15/puzzle1.txt", tiled: Boolean = false): Table =
-    val stable = Table(
+  def readInput(path: String = "src/main/resources/day15/puzzle1.txt"): Table =
+    Table(
       Source
         .fromFile(path)
         .getLines
         .toList
         .map(_.map(_.asDigit))
     )
-
-    val table =
-      if tiled then
-        val arr = Array.ofDim[Int](stable.rows * 5, stable.cols * 5)
-        for {
-          r  <- 0 until stable.rows
-          c  <- 0 until stable.cols
-          dr <- 0 until 5
-          dc <- 0 until 5
-        } yield arr(r + dr * stable.rows)(c + dc * stable.cols) = (stable.get(r, c) + dc + dr - 1) % 9 + 1
-        Table(arr.toIndexedSeq.map(_.toSeq).toSeq)
-      else stable
-
-    table
 
   def dijkstra(table: Table): Int =
     val distTo = Array.fill[Int](table.tableSize)(Int.MaxValue)
@@ -75,3 +60,13 @@ object Solution:
     distTo(last)
 
   def part1(table: Table) = dijkstra(table)
+
+  def part2(stable: Table) =
+    val arr = Array.ofDim[Int](stable.rows * 5, stable.cols * 5)
+    for {
+      r  <- 0 until stable.rows
+      c  <- 0 until stable.cols
+      dr <- 0 until 5
+      dc <- 0 until 5
+    } do arr(r + dr * stable.rows)(c + dc * stable.cols) = (stable.get(r, c) + dc + dr - 1) % 9 + 1
+    dijkstra(Table(arr.toIndexedSeq.map(_.toSeq).toSeq))
