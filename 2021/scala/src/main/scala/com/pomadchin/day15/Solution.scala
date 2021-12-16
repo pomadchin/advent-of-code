@@ -9,23 +9,24 @@ object Solution:
     def apply(s: Seq[Seq[Int]]): Table = s
 
   extension (t: Table)
-    def toSeq: Seq[Seq[Int]]              = t
-    def cols: Int                         = toSeq(0).length
-    def rows: Int                         = toSeq.length
-    def tableSize: Int                    = cols * rows
-    def index(row: Int, col: Int): Int    = row * cols + col
-    def col(index: Int): Int              = index % cols
-    def row(index: Int): Int              = index / cols
-    def get(row: Int, col: Int): Int      = toSeq(row)(col)
-    def getSafe(row: Int, col: Int): Int  = toSeq(row % rows)(col % cols)
-    def get(index: Int): Int              = toSeq(row(index))(col(index))
-    def adj(index: Int): List[(Int, Int)] = adj(row(index), col(index))
+    def toSeq: Seq[Seq[Int]]                = t
+    def cols: Int                           = toSeq(0).length
+    def rows: Int                           = toSeq.length
+    def tableSize: Int                      = cols * rows
+    def indexToGrid(index: Int): (Int, Int) = row(index) -> col(index)
+    def index(row: Int, col: Int): Int      = row * cols + col
+    def col(index: Int): Int                = index       % cols
+    def row(index: Int): Int                = index / cols
+    def get(row: Int, col: Int): Int        = toSeq(row)(col)
+    def getSafe(row: Int, col: Int): Int    = toSeq(row % rows)(col % cols)
+    def get(index: Int): Int                = toSeq(row(index))(col(index))
+    def adj(index: Int): List[(Int, Int)]   = adj(row(index), col(index))
     def adj(row: Int, col: Int): List[(Int, Int)] =
       List((-1, 0), (1, 0), (0, -1), (0, 1))
         .map((dr, dc) => (row + dr, col + dc))
         .filter((r, c) => r >= 0 && r < rows && c >= 0 && c < cols)
 
-  def readInput(path: String = "src/main/resources/day15/puzzle1.txt", tiled: Boolean = false): (Table, EdgeWeightedDigraph) =
+  def readInput(path: String = "src/main/resources/day15/puzzle1.txt", tiled: Boolean = false): Table =
     val stable = Table(
       Source
         .fromFile(path)
@@ -36,73 +37,41 @@ object Solution:
 
     val table =
       if tiled then
-        val t = 5
-        Table((0 until (t * stable.rows)).map { r =>
-          (0 until (t * stable.cols)).map { c =>
-            ((stable.getSafe(r, c) + c / stable.cols + r / stable.cols - 1) % 9) - 1
-          }
-        })
+        val arr = Array.ofDim[Int](stable.rows * 5, stable.cols * 5)
+        for {
+          x     <- 0 until stable.cols
+          y     <- 0 until stable.rows
+          gridX <- 0 until 5
+          gridY <- 0 until 5
+        } yield arr(x + gridX * stable.cols)(y + gridY * stable.rows) = (stable.get(x, y) + gridX + gridY - 1) % 9 + 1
+        Table(arr.toIndexedSeq.map(_.toSeq).toSeq)
       else stable
 
-    // add extra two edges =>
-    val G = new EdgeWeightedDigraph(table.tableSize + 2)
+    table
 
-    // extra (vritual) graph nodes indices
-    val top    = table.tableSize
-    val bottom = top + 1
-
-    // first and the last real nodes in the graph
-    val first = 0
-    val last  = top - 1
-
-    // add the top vertex
-    G.addEdge(DirectedEdge(top, first, table.get(0)))
-    // add the bottom vertex
-    G.addEdge(DirectedEdge(last, bottom, table.get(last)))
-
-    // build the rest of the graph
-    (0 until table.rows).foreach { r =>
-      (0 until table.cols).foreach { c =>
-        val from = table.index(r, c)
-        // add all nodes into the graph the current element is linked to
-        table.adj(r, c).map(table.index).foreach { to => G.addEdge(DirectedEdge(from, to, table.get(to))) }
-      }
-    }
-
-    (table, G)
-
-  def dijkstra(table: Table, G: EdgeWeightedDigraph): Double =
-    // array of visits
-    val marked = Array.ofDim[Boolean](G.getV)
-    // stores (edge weight, cumulative dist)
-    val distTo = Array.fill[(Double, Double)](G.getV)((Double.MaxValue, Double.MaxValue))
+  def dijkstra(table: Table): Int =
+    val distTo = Array.fill[Int](table.tableSize)(Int.MaxValue)
 
     // should be an indexed PQ to be more mem efficient
-    var pq = mutable.PriorityQueue.empty[(Int, Double)](Ordering.by[(Int, Double), Double](-_._2))
+    var pq = mutable.PriorityQueue.empty[(Int, Int)](Ordering[(Int, Int)].reverse)
 
-    val top    = table.tableSize
-    val bottom = top + 1
     // first and the last real nodes in the graph
     val first = 0
-    val last  = top - 1
+    val last  = table.tableSize - 1
 
-    distTo(top) = (0, 0)
+    distTo(first) = 0
+    pq.enqueue(distTo(first) -> first)
 
-    pq.enqueue(top -> distTo(0)._2)
+    def relax(from: Int, to: Int): Unit =
+      val weight = table.get(to)
+      if distTo(to) > distTo(from) + weight then
+        distTo(to) = distTo(from) + weight
+        pq.enqueue(distTo(to) -> to)
 
-    def relax(edge: DirectedEdge): Unit =
-      val (from, to) = edge.from -> edge.to
-      if distTo(to)._2 > distTo(from)._2 + edge.weight then
-        distTo(to) = (edge.weight, distTo(from)._2 + edge.weight)
-        pq.enqueue(to -> distTo(to)._2)
+    while pq.nonEmpty do
+      val (_, from) = pq.dequeue
+      table.adj(from).map(table.index).foreach(relax(from, _))
 
-    while pq.nonEmpty do G.adjList(pq.dequeue._1).foreach(relax)
+    distTo(last)
 
-    val dist = distTo(last)
-    dist._2 - dist._1
-
-  def part1(table: Table, G: EdgeWeightedDigraph) =
-    dijkstra(table, G)
-
-  def part2(table: Table, G: EdgeWeightedDigraph) =
-    dijkstra(table, G)
+  def part1(table: Table) = dijkstra(table)
