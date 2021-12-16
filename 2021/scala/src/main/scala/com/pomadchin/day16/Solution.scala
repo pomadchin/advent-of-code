@@ -15,7 +15,7 @@ object Solution:
   def readInput(path: String = "src/main/resources/day16/puzzle1.txt"): String =
     Source.fromFile(path).getLines.next
 
-  // need to do a smarted way of converting bits
+  // need to do a smarter way of converting bits
   private val hexBits = Map(
     '0' -> "0000",
     '1' -> "0001",
@@ -70,7 +70,7 @@ object Solution:
         Literal(version, literalValue, offset)
 
       // operator
-      case t =>
+      case packetType =>
         // length type ID
         var offset = headerOffset
         val typeId = bin.substring(offset, offset + 1)
@@ -93,7 +93,7 @@ object Solution:
               offset += p.length
               subpackets += p
 
-            Operator(version, packetTypeId.toInt, subpackets.toList, offset)
+            Operator(version, packetType.toInt, subpackets.toList, offset)
 
           // If the length type ID is 1, then the next 11 bits are a number that represents
           // the number of sub-packets immediately contained by this packet.
@@ -111,7 +111,7 @@ object Solution:
               offset += p.length
               subpackets += p
 
-            Operator(version, packetTypeId.toInt, subpackets.toList, offset)
+            Operator(version, packetType.toInt, subpackets.toList, offset)
 
   def sumVersions(p: Packet): Long =
     p match
