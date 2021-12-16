@@ -39,11 +39,11 @@ object Solution:
       if tiled then
         val arr = Array.ofDim[Int](stable.rows * 5, stable.cols * 5)
         for {
-          x     <- 0 until stable.cols
-          y     <- 0 until stable.rows
-          gridX <- 0 until 5
-          gridY <- 0 until 5
-        } yield arr(x + gridX * stable.cols)(y + gridY * stable.rows) = (stable.get(x, y) + gridX + gridY - 1) % 9 + 1
+          r  <- 0 until stable.rows
+          c  <- 0 until stable.cols
+          dr <- 0 until 5
+          dc <- 0 until 5
+        } yield arr(r + dr * stable.rows)(c + dc * stable.cols) = (stable.get(r, c) + dc + dr - 1) % 9 + 1
         Table(arr.toIndexedSeq.map(_.toSeq).toSeq)
       else stable
 
