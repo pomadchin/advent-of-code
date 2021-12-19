@@ -44,8 +44,9 @@ object Solution:
             case '(' | '[' | '{' | '<' => (c :: acc, score)
             case _ =>
               val op = acc.head
-              // skip
+              // skip if closed (no score addition happens)
               if (matching(c) == op) (acc.tail, score)
+              // compute scores for everything that is after a non closed parentheses
               else (Nil, scores(c))
         else (acc -> score)
       }
@@ -62,7 +63,7 @@ object Solution:
       input
         .flatMap { str =>
           val (res, _) = str.stackScored
-          if res.nonEmpty then Some(res.foldLeft(0L) { (acc, c) => acc * 5 + scoresr(matchingr(c)) })
+          if res.nonEmpty then Some(res.foldLeft(0L)((acc, c) => acc * 5 + scoresr(matchingr(c))))
           else None
         }
         .toList
