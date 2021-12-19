@@ -12,6 +12,8 @@ import scala.annotation.tailrec
 // [[[[1,2],[3,4]],[[5,6],[7,8]]],9]
 sealed trait Tree:
   def add(lv: Int, rv: Int): Tree = Tree.add(this, lv, rv)
+  def addLeft(lv: Int): Tree      = add(lv, 0)
+  def addRight(rv: Int): Tree     = add(0, rv)
 
   override def toString: String =
     def rec(t: Tree): String = t match
@@ -99,7 +101,7 @@ object Solution:
 
           // to the left tree add the left of the right + 0
           // to the right tree add the right of the left + 0
-          (Branch(lt.add(0, rl), rt.add(lr, 0)), ll, rr, re)
+          (Branch(lt.addRight(rl), rt.addLeft(lr)), ll, rr, re)
 
         case l: Leaf => (l, 0, 0, exploded)
 
