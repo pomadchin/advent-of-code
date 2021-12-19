@@ -5,6 +5,7 @@ class SolutionTest extends munit.FunSuite:
   def input           = readInput().toList
   def inputExample    = readInput("src/main/resources/day18/example.txt").toList
   def inputExample1   = readInput("src/main/resources/day18/example1.txt").toList
+  def inputExample2   = readInput("src/main/resources/day18/example2.txt").toList
   def inputExampleRaw = readInputRaw("src/main/resources/day18/example.txt").toList
 
   test("parse") { assertEquals(inputExampleRaw, inputExample.map(_.toString)) }
@@ -29,6 +30,6 @@ class SolutionTest extends munit.FunSuite:
     assertEquals(split2.toString, "[[[[0,7],4],[[7,8],[0,[6,7]]]],[1,1]]")
   }
   test("Q1Example") { assertEquals(part1(inputExample1), 4140) }
-  test("Q1") { println(part1(input)) }
-  test("Q2Example") {}
-  test("Q2") {}
+  test("Q1") { assertEquals(part1(input), 4289) }
+  test("Q2Example") { assertEquals(part2(inputExample2), 3993) }
+  test("Q2") { assertEquals(part2(input), 4807) }

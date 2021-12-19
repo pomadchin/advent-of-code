@@ -3,7 +3,6 @@ package com.pomadchin.day18
 import scala.io.Source
 import scala.collection.mutable
 import scala.annotation.tailrec
-import scala.util.chaining.*
 
 // tree can be used as a representation of a snail fish
 // [1,2]
@@ -36,7 +35,6 @@ object Solution:
     @tailrec
     def rec(p: Int, stack: List[Char]): Tree =
       s.charAt(p) match
-        // if the start of a tree
         // go deeper
         case '[' => rec(p + 1, '[' :: stack)
         // pop the stack in case we close the brace
@@ -97,7 +95,7 @@ object Solution:
 
           // always propogate ll and rr to the top
           // it is leaf values always on the very bottom
-          // letter one of them is 0 and brought to the top along with non zero
+          // one of them is 0 and brought to the top along with non zero
 
           // to the left tree add the left of the right + 0
           // to the right tree add the right of the left + 0
@@ -136,3 +134,10 @@ object Solution:
     readInputRaw(path).map(parse)
 
   def part1(input: List[Tree]): Int = magnitude(input.reduceLeft(addition))
+
+  def part2(input: List[Tree]): Int =
+    (0 until input.length).flatMap { i =>
+      (0 until input.length).flatMap { j =>
+        if (i != j) Some(part1(List(input(i), input(j)))) else None
+      }
+    }.max
