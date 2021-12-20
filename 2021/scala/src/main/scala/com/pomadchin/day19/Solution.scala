@@ -45,9 +45,11 @@ object Solution:
 
     def +(o: Point3D): Point3D = Point3D(t.x + o.x, t.y + o.y, t.z + o.z)
     def -(o: Point3D): Point3D = Point3D(t.x - o.x, t.y - o.y, t.z - o.z)
+    def abs: Point3D           = Point3D(math.abs(x), math.abs(y), math.abs(z))
+    def sum: Int               = x + y + z
 
     // Manhattan distance, see https://en.wikipedia.org/wiki/Taxicab_geometry
-    def distance(o: Point3D): Int = math.abs(x - o.x) + math.abs(y - o.y) + math.abs(z - o.z)
+    def distance(o: Point3D): Int = (t - o).abs.sum
 
     // 24 different orientations of each point
     def orientations: List[Point3D] =
