@@ -13,9 +13,9 @@ object Solution:
     def empty: Scanner                   = Scanner(List.empty[Point3D])
 
   extension (s: Scanner)
-    def length: Int                = s.length
-    def toList: List[Point3D]      = s
-    def merge(o: Scanner): Scanner = (toList ++ o.toList).distinct
+    def length: Int                      = s.length
+    def toList: List[Point3D]            = s
+    infix def merge(o: Scanner): Scanner = (toList ++ o.toList).distinct
     // map(_.orientation) produces more points orientations
     // transpose to get make them used across all points
     // i.e.Scanner => List[Scanner]
@@ -46,10 +46,12 @@ object Solution:
     def +(o: Point3D): Point3D = Point3D(t.x + o.x, t.y + o.y, t.z + o.z)
     def -(o: Point3D): Point3D = Point3D(t.x - o.x, t.y - o.y, t.z - o.z)
 
+    // Manhattan distance, see https://en.wikipedia.org/wiki/Taxicab_geometry
+    def distance(o: Point3D): Int = math.abs(x - o.x) + math.abs(y - o.y) + math.abs(z - o.z)
+
     // 24 different orientations of each point
     def orientations: List[Point3D] =
       List(
-        // format: off
         // fixed z (right) 4
         Point3D((x, y, z)),
         Point3D((-y, x, z)),
@@ -80,7 +82,6 @@ object Solution:
         Point3D((-y, z, -x)),
         Point3D((-x, z, y)),
         Point3D((y, z, x))
-        // format: on
       )
 
   // ugly parsing
@@ -134,9 +135,14 @@ object Solution:
       // if all queues are empty return the result
       case _ => normalized
 
-  // it is ~x2 faster than normalize
+  // it is ~x2 faster than normalize, preserves the position of each scanner and its normalized form
   @tailrec
-  def normalize2(raw: List[Scanner], skipped: List[Scanner], shifted: List[Scanner], base: Scanner, normalized: Scanner): Scanner =
+  def normalize2(raw: List[Scanner],
+                 skipped: List[Scanner],
+                 shifted: List[Scanner],
+                 base: Scanner,
+                 normalized: List[(Point3D, Scanner)]
+  ): List[(Point3D, Scanner)] =
     raw match
       case scanner :: tail =>
         scanner.orientations.flatMap { scanner =>
@@ -148,10 +154,10 @@ object Solution:
             .mapValues(_.length)
             .find(_._2 >= 12)
             .map(_._1)
-            .map(scanner.shift)
+            .map(pos => (pos, scanner.shift(pos)))
         }.headOption match {
           // if can be normalized, remove it from the normalization queue
-          case Some(scanner) => normalize2(tail, skipped, scanner :: shifted, base, normalized.merge(scanner))
+          case Some(s @ (_, scanner)) => normalize2(tail, skipped, scanner :: shifted, base, s :: normalized)
           // if not normalized - preserve it for a later time
           case _ => normalize2(tail, scanner :: skipped, shifted, base, normalized)
         }
@@ -159,16 +165,22 @@ object Solution:
       // raw is empty and skipped is non empty, put all skipped into the processing queue
       case Nil if skipped.nonEmpty && shifted.nonEmpty => normalize2(skipped, Nil, shifted.tail, shifted.head, normalized)
 
-      case Nil if skipped.nonEmpty => normalize2(skipped, Nil, Nil, normalized, normalized)
+      case Nil if skipped.nonEmpty => normalize2(skipped, Nil, Nil, normalized.head._2, normalized)
 
       // if all queues are empty return the result
       case _ => normalized
 
   def part1(scanners: List[Scanner]): Int =
     // normalize(scanners.tail, Nil, scanners.head).length
-    normalize2(scanners.tail, Nil, Nil, scanners.head, scanners.head).length
+    val normalized = normalize2(scanners.tail, Nil, Nil, scanners.head, (Point3D.zero, scanners.head) :: Nil)
+    normalized.map(_._2).reduce(_ merge _).length
+
+  def part2(scanners: List[Scanner]): Int =
+    val normalized = normalize2(scanners.tail, Nil, Nil, scanners.head, (Point3D.zero, scanners.head) :: Nil).map(_._1)
+    normalized.flatMap(l => normalized.map(r => l.distance(r))).max
 
   // manually derive the logic of sensors shifting for 4 example scanners
+  // I had hard times thinking about it
   def normalizeManual4(scanners: List[Scanner]) =
     // the base scanner
     val scanner0 = scanners(0)

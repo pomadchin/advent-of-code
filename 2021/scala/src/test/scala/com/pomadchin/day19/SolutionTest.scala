@@ -7,5 +7,5 @@ class SolutionTest extends munit.FunSuite:
 
   test("Q1Example") { assertEquals(part1(inputExample), 79) }
   test("Q1") { assertEquals(part1(input), 496) }
-  test("Q2Example") {}
-  test("Q2") {}
+  test("Q2Example") { assertEquals(part2(inputExample), 3621) }
+  test("Q2") { assertEquals(part2(input), 14478) }
