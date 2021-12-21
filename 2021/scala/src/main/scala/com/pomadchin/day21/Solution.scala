@@ -66,27 +66,32 @@ object Solution:
 
   // cache func calls
   val memoizeDirac = mutable.Map.empty[(Int, Int, Int, Int), (Long, Long)]
-  def computeDirac(p1: Int, p2: Int, p1score: Int, p2score: Int): (Long, Long) =
-    memoizeDirac.getOrElseUpdate(
-      (p1, p2, p1score, p2score), {
-        if p1score >= 21 then (1, 0)
-        else if p2score >= 21 then (0, 1)
-        else
-          // everytime throw all dice
-          allrolls.foldLeft(0L -> 0L) { case ((p1winsa, p2winsa), r) =>
-            // compute p1 score first
-            var p1n = score(p1 + r)
-            // compute the summ score
-            var p1scoren = p1score + p1n
 
-            // now do the same but for the p2
-            // swap func arguments
-            val (p2wins, p1wins) = computeDirac(p2, p1n, p2score, p1scoren)
+  // function to memoize recursion calls
+  // it was nice to remember the fib(n) = fib(n-1) + fib(n-2) formula as well
+  def memoize[T, R](f: T => R): T => R = new mutable.HashMap[T, R]() {
+    override def apply(key: T) = getOrElseUpdate(key, f(key))
+  }
 
-            (p1winsa + p1wins, p2winsa + p2wins)
-          }
+  val computeDirac: ((Int, Int, Int, Int)) => (Long, Long) = memoize { a =>
+    val (p1, p2, p1score, p2score) = a
+    if p1score >= 21 then (1L, 0L)
+    else if p2score >= 21 then (0L, 1L)
+    else
+      // everytime throw all dice
+      allrolls.foldLeft(0L -> 0L) { case ((p1winsa, p2winsa), r) =>
+        // compute p1 score first
+        var p1n = score(p1 + r)
+        // compute the summ score
+        var p1scoren = p1score + p1n
+
+        // now do the same but for the p2
+        // swap func arguments
+        val (p2wins, p1wins) = computeDirac(p2, p1n, p2score, p1scoren)
+
+        (p1winsa + p1wins, p2winsa + p2wins)
       }
-    )
+  }
 
   def part1(p1: Int, p2: Int): Int =
     computeDeterministic(p1, p2, 0, 0, 1, 1)
