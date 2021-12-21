@@ -89,6 +89,18 @@ object Solution:
     val tile = Tile(lines.toArray.map(_.toCharArray.map(charToBit)))
     (tile, enhancer)
 
+  // if "#" is the first char
+  // that at first iteration
+  // all outer pixels (if set to 0) are going to change and to convert to true
+  // ...    ###
+  // ... => ###
+  // ...    ###
+  // and the next iteration after that will convert borders one more time
+  // ###    ...
+  // ### => ...
+  // ###    ...
+  // => we can't fill broders every time
+  // => every even case is filled with 0 and every odd with 1
   def rule(i: Int, enhancer: Array[Boolean]): Boolean =
     if enhancer(0) then if i % 2 == 0 then true else false
     else false
