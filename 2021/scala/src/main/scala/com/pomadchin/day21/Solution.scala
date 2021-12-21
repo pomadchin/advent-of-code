@@ -73,8 +73,7 @@ object Solution:
     override def apply(key: T) = getOrElseUpdate(key, f(key))
   }
 
-  val computeDirac: ((Int, Int, Int, Int)) => (Long, Long) = memoize { a =>
-    val (p1, p2, p1score, p2score) = a
+  val computeDirac: ((Int, Int, Int, Int)) => (Long, Long) = memoize { (p1, p2, p1score, p2score) =>
     if p1score >= 21 then (1L, 0L)
     else if p2score >= 21 then (0L, 1L)
     else
@@ -82,7 +81,7 @@ object Solution:
       allrolls.foldLeft(0L -> 0L) { case ((p1winsa, p2winsa), r) =>
         // compute p1 score first
         var p1n = score(p1 + r)
-        // compute the summ score
+        // compute the sum score
         var p1scoren = p1score + p1n
 
         // now do the same but for the p2
