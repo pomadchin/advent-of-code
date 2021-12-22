@@ -3,8 +3,7 @@ package com.pomadchin.day22
 import scala.io.Source
 import scala.collection.mutable
 
-// the idea is to build a tree
-// and compute its size
+// the idea is to count sizes of intersected / unioned Cuboids
 sealed trait Cuboid:
   def size: Long
   def intersection(o: Cuboid): Cuboid
