@@ -2,10 +2,7 @@ package com.pomadchin.day24
 
 class SolutionTest extends munit.FunSuite:
   import Solution.*
-  def input        = readInput()
-  def inputExample = readInput("src/main/resources/day24/example.txt")
+  def input = readInput()
 
-  test("Q1Example") {}
-  test("Q1") {}
-  test("Q2Example") {}
-  test("Q2") {}
+  test("Q1") { assertEquals(part1(input), 96929994293996L) }
+  test("Q2") { assertEquals(part2(input), 41811761181141L) }
