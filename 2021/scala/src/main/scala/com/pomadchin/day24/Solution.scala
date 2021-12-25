@@ -99,6 +99,7 @@ object Solution:
       case Mod(Ref(a), Ref(b))   => s + (a -> (s(a) % s(b)))
       case Eql(Ref(a), Value(b)) => s + (a -> boolToInt(s(a) == b))
       case Eql(Ref(a), Ref(b))   => s + (a -> boolToInt(s(a) == s(b)))
+      case _                     => throw new Exception(s"Illegal state: ${e}")
 
   def evalExpr(e: Expr, s: MutableState, in: Int): Unit =
     e match
@@ -113,6 +114,7 @@ object Solution:
       case Mod(Ref(a), Ref(b))   => s.update(a, (s(a) % s(b)))
       case Eql(Ref(a), Value(b)) => s.update(a, boolToInt(s(a) == b))
       case Eql(Ref(a), Ref(b))   => s.update(a, boolToInt(s(a) == s(b)))
+      case _                     => throw new Exception(s"Illegal state: ${e}")
 
   def evalBlock(block: List[Expr], s: State, in: Int): State =
     block.foldLeft(s)((s, e) => evalExpr(e, s, in))
