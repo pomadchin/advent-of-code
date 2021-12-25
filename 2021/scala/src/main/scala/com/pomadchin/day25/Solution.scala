@@ -59,48 +59,33 @@ object Solution:
   def readInput(path: String = "src/main/resources/day25/puzzle1.txt"): Grid =
     Grid(Source.fromFile(path).getLines.map(_.toCharArray.map(Move.fromChar)).toArray)
 
-  def step(g: Grid): Boolean =
+  def step(g: Grid, direction: Move): Boolean =
     var move   = false
     val marked = Array.fill[Boolean](g.rows, g.cols)(false)
 
-    // move East
     cfor(0)(_ < g.rows, _ + 1) { r =>
       cfor(0)(_ < g.cols, _ + 1) { c =>
         if !marked(r)(c) then
           g.get(r, c) match
-            case East =>
+            case m if m == direction =>
               marked(r)(c) = true
-              val (nc, rc) = g.next(r, c, East)
+              val (nc, rc) = g.next(r, c, m)
               if g.get(nc, rc).isFree && !marked(nc)(rc) then
                 move = true
-                g.set(nc, rc, East)
+                g.set(nc, rc, m)
                 g.set(r, c, Empty)
                 marked(nc)(rc) = true
-
-            case Empty | South => // do nothing
-      }
-    }
-
-    marked.clear
-    // move South
-    cfor(0)(_ < g.rows, _ + 1) { r =>
-      cfor(0)(_ < g.cols, _ + 1) { c =>
-        if !marked(r)(c) then
-          g.get(r, c) match
-            case South =>
-              marked(r)(c) = true
-              val (nc, rc) = g.next(r, c, South)
-              if g.get(nc, rc).isFree && !marked(nc)(rc) then
-                move = true
-                g.set(nc, rc, South)
-                g.set(r, c, Empty)
-                marked(nc)(rc) = true
-
-            case Empty | East => // do nothing
+            case _ => // do nothing
       }
     }
 
     move
+
+  def step(g: Grid): Boolean =
+    val e = step(g, East)
+    val s = step(g, South)
+
+    e || s
 
   def part1(g: Grid): Int =
     var move  = true
