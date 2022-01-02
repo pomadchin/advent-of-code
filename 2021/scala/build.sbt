@@ -15,5 +15,8 @@ scalacOptions ++= Seq(
   "-Ykind-projector"
 )
 
-libraryDependencies += "org.scalameta" %% "munit" % "0.7.29" % Test
+libraryDependencies ++= Seq(
+  "io.higherkindness" %% "droste-core" % "0.9.0-M3",
+  "org.scalameta"     %% "munit"       % "0.7.29" % Test
+)
 testFrameworks += new TestFramework("munit.Framework")
