@@ -1,6 +1,6 @@
 name         := "advent-of-code-2021"
 version      := "0.1.0-SNAPSHOT"
-scalaVersion := "3.1.0"
+scalaVersion := "3.2.0"
 organization := "com.pomadchin"
 scalacOptions ++= Seq(
   "-deprecation",
