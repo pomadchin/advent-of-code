@@ -6,5 +6,5 @@ class SolutionTest extends munit.FunSuite:
   def inputExample  = readInput("src/main/resources/day8/example.txt")
   def inputExample1 = readInput("src/main/resources/day8/example1.txt")
 
-  // test("Q1") { }
-  // test("Q2") { }
+// test("Q1") { }
+// test("Q2") { }

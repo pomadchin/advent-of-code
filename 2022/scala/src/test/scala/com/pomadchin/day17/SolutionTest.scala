@@ -5,5 +5,5 @@ class SolutionTest extends munit.FunSuite:
   lazy val input        = readInput()
   lazy val inputExample = readInput("src/main/resources/day17/example.txt")
 
-  // test("Q1") { }
-  // test("Q2") { }
+// test("Q1") { }
+// test("Q2") { }

@@ -2,7 +2,7 @@ package com.pomadchin.day1
 
 class SolutionTest extends munit.FunSuite:
   import Solution.*
-  lazy val input = readInput()
+  lazy val input        = readInput()
   lazy val inputExample = readInput("src/main/resources/day1/example.txt")
 
   test("Q1Example") { assertEquals(part1(inputExample), 24000L) }
