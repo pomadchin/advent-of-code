@@ -8,7 +8,7 @@ on:
   release:
     types: [published]
 jobs:
-  build2021:
+  build2021-scala:
     name: Build and Test (Scala 2021)
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != 'pomadchin/advent-of-code'
     strategy:
@@ -32,3 +32,52 @@ jobs:
 
       - name: Build project
         run: cd 2021/scala; sbt test
+
+  build2022-scala:
+    name: Build and Test (Scala 2022)
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != 'pomadchin/advent-of-code'
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        java: [11]
+        distribution: [temurin]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: coursier/cache-action@v6
+      - uses: actions/setup-java@v3
+        with:
+          distribution: ${{ matrix.distribution }}
+          java-version: ${{ matrix.java }}
+
+      - name: Check formatting
+        run: cd 2022/scala; sbt scalafmtCheckAll
+
+      - name: Build project
+        run: cd 2022/scala; sbt test
+
+  build2022-rust:
+    name: Build and Test (Rust 2022)
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != 'pomadchin/advent-of-code'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      
+      - name: Check formatting
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --manifest-path 2022/rust/Cargo.toml --all -- --check
+
+      - name: Build project
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --manifest-path 2022/rust/Cargo.toml
+  
