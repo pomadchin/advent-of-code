@@ -1,4 +1,5 @@
 use super::utils;
+use lazy_static::lazy_static;
 
 type Assignment = (i32, i32);
 
@@ -18,7 +19,6 @@ fn parse_input(input: Vec<String>) -> Vec<(Assignment, Assignment)> {
         .collect()
 }
 
-#[allow(dead_code)]
 fn input_example() -> Vec<(Assignment, Assignment)> {
     parse_input(utils::read_file_in_cwd_by_line("src/day04/example.txt"))
 }
@@ -59,38 +59,43 @@ fn part2(input: &Vec<(Assignment, Assignment)>) -> i32 {
     input.into_iter().map(assignments_intersected_tup).sum()
 }
 
+lazy_static! {
+    static ref INPUT_EXAMPLE: Vec<(Assignment, Assignment)> = input_example();
+    static ref INPUT: Vec<(Assignment, Assignment)> = input();
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn q1e() {
-        let input = input_example();
-        assert_eq!(part1(&input), 2);
+        let input = &INPUT_EXAMPLE;
+        assert_eq!(part1(input), 2);
     }
 
     #[test]
     fn q1() {
-        let input = input();
-        assert_eq!(part1(&input), 490);
+        let input = &INPUT;
+        assert_eq!(part1(input), 490);
     }
 
     #[test]
     fn q2e() {
-        let input = input_example();
-        assert_eq!(part2(&input), 4);
+        let input = &INPUT_EXAMPLE;
+        assert_eq!(part2(input), 4);
     }
 
     #[test]
     fn q2() {
-        let input = input();
-        assert_eq!(part2(&input), 921);
+        let input = &INPUT;
+        assert_eq!(part2(input), 921);
     }
 }
 
 pub fn run() {
-    let input = input();
+    let input = &INPUT;
 
-    println!("Part 1: {}", part1(&input));
-    println!("Part 2: {}", part2(&input));
+    println!("Part 1: {}", part1(input));
+    println!("Part 2: {}", part2(input));
 }

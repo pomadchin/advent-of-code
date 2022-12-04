@@ -1,4 +1,5 @@
 use super::utils;
+use lazy_static::lazy_static;
 use std::collections::HashSet;
 
 const INDEX: &str = ".abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -45,26 +46,30 @@ fn part2(rucksacks: &Vec<String>) -> i32 {
         .sum()
 }
 
+lazy_static! {
+    static ref INPUT: Vec<String> = input();
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn q1() {
-        let input = input();
-        assert_eq!(part1(&input), 8109);
+        let input = &INPUT;
+        assert_eq!(part1(input), 8109);
     }
 
     #[test]
     fn q2() {
-        let input = input();
-        assert_eq!(part2(&input), 2738);
+        let input = &INPUT;
+        assert_eq!(part2(input), 2738);
     }
 }
 
 pub fn run() {
-    let input = input();
+    let input = &INPUT;
 
-    println!("Part 1: {}", part1(&input));
-    println!("Part 2: {}", part2(&input));
+    println!("Part 1: {}", part1(input));
+    println!("Part 2: {}", part2(input));
 }
