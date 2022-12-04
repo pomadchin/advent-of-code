@@ -8,11 +8,7 @@ fn char_to_priority(c: char) -> i32 {
 }
 
 fn input() -> Vec<String> {
-    utils::read_file_in_cwd("src/day03/puzzle1.txt")
-        .split('\n')
-        .into_iter()
-        .map(|s| s.to_string())
-        .collect()
+    utils::read_file_in_cwd_by_line("src/day03/puzzle1.txt")
 }
 
 fn part1(rucksacks: &Vec<String>) -> i32 {
