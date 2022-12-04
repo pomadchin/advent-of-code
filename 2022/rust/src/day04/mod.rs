@@ -5,15 +5,14 @@ type Assignment = (i32, i32);
 
 fn parse_input(input: Vec<String>) -> Vec<(Assignment, Assignment)> {
     fn parse_assignment(str: &str) -> Assignment {
-        let mut splitf = str.split("-").into_iter().flat_map(|s| s.parse::<i32>().ok());
-        (splitf.next().unwrap(), splitf.next().unwrap())
+        let mut split = str.split("-").into_iter().flat_map(|s| s.parse::<i32>().ok());
+        (split.next().unwrap(), split.next().unwrap())
     }
 
     input
         .into_iter()
         .map(|line| {
-            let mut split = line.split(",");
-            let (fst, snd) = (split.next().unwrap(), split.next().unwrap());
+            let (fst, snd) = line.split_once(',').unwrap();
             (parse_assignment(fst), parse_assignment(snd))
         })
         .collect()
