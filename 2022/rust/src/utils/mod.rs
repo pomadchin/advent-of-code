@@ -53,3 +53,14 @@ where
     let futures: Vec<F> = xs.into_iter().map(f).collect();
     join_all(futures)
 }
+
+#[allow(dead_code)]
+pub fn tupled<F, S, R, FN>(f: FN) -> impl Fn((F, S)) -> R
+where
+    FN: Fn(F, S) -> R,
+{
+    move |tup: (F, S)| {
+        let (fst, snd) = tup;
+        f(fst, snd)
+    }
+}

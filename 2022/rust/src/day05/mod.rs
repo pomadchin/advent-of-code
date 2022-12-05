@@ -3,7 +3,7 @@ use itertools::Itertools;
 use lazy_static::lazy_static;
 use std::collections::VecDeque;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Op {
     n: i32,
     from: usize,
@@ -64,7 +64,7 @@ fn input() -> Input {
     parse_input(utils::read_file_in_cwd_by_line("src/day05/puzzle1.txt"))
 }
 
-fn simulate(stacks_input: Vec<Vec<char>>, ops: &Vec<Op>, grouped: bool) -> String {
+fn simulate(stacks_input: Vec<Vec<char>>, ops: Vec<Op>, grouped: bool) -> String {
     let mut stacks = stacks_input;
 
     // simulate
@@ -94,20 +94,18 @@ fn simulate(stacks_input: Vec<Vec<char>>, ops: &Vec<Op>, grouped: bool) -> Strin
     })
 }
 
-fn part1_tup(input: &Input) -> String {
-    let (stacks_input, ops) = input;
-    part1(stacks_input.clone(), &ops)
+fn part1_tup(input: Input) -> String {
+    utils::tupled(part1)(input)
 }
 
-fn part1(stacks_input: Vec<Vec<char>>, ops: &Vec<Op>) -> String {
+fn part1(stacks_input: Vec<Vec<char>>, ops: Vec<Op>) -> String {
     simulate(stacks_input, ops, false)
 }
 
-fn part2_tup(input: &Input) -> String {
-    let (stacks_input, ops) = input;
-    part2(stacks_input.clone(), &ops)
+fn part2_tup(input: Input) -> String {
+    utils::tupled(part2)(input)
 }
-fn part2(stacks_input: Vec<Vec<char>>, ops: &Vec<Op>) -> String {
+fn part2(stacks_input: Vec<Vec<char>>, ops: Vec<Op>) -> String {
     simulate(stacks_input, ops, true)
 }
 
@@ -122,32 +120,32 @@ mod tests {
 
     #[test]
     fn q1e() {
-        let input = &INPUT_EXAMPLE;
+        let input = INPUT_EXAMPLE.clone();
         assert_eq!(part1_tup(input), "CMZ".to_owned());
     }
 
     #[test]
     fn q1() {
-        let input = &INPUT;
+        let input = INPUT.clone();
         assert_eq!(part1_tup(input), "WCZTHTMPS".to_owned());
     }
 
     #[test]
     fn q2e() {
-        let input = &INPUT_EXAMPLE;
+        let input = INPUT_EXAMPLE.clone();
         assert_eq!(part2_tup(input), "MCD".to_owned());
     }
 
     #[test]
     fn q2() {
-        let input = &INPUT;
+        let input = INPUT.clone();
         assert_eq!(part2_tup(input), "BLSGJSDTS".to_owned());
     }
 }
 
 pub fn run() {
-    let input = &INPUT;
+    let input = INPUT.clone();
 
-    println!("Part 1: {}", part1_tup(input));
-    println!("Part 2: {}", part2_tup(input));
+    println!("Part 1: {}", part1_tup(input.clone()));
+    println!("Part 2: {}", part2_tup(input.clone()));
 }
