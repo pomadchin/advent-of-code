@@ -18,10 +18,7 @@ fn parse_input(input: Vec<String>) -> Input {
     let stacks_len_max = stacks_str.len() - 1; // the last string is for count
     let stacks_count = stacks_str
         .last()
-        .unwrap()
-        .trim()
-        .split("   ")
-        .last()
+        .and_then(|x| x.trim().split("   ").last())
         .and_then(|i| i.parse::<usize>().ok())
         .unwrap_or(0);
 
@@ -44,12 +41,16 @@ fn parse_input(input: Vec<String>) -> Input {
     let ops = ops_str
         .iter()
         .filter(|s| !s.is_empty())
-        .map(|val| {
+        .flat_map(|val| {
             let op_str = val.split(" ").collect_vec();
-            let n = op_str[1].parse::<i32>().unwrap();
-            let from = op_str[3].parse::<usize>().unwrap() - 1;
-            let to = op_str[5].parse::<usize>().unwrap() - 1;
-            Op { n, from, to }
+            let n_res = op_str[1].parse::<i32>();
+            let from_res = op_str[3].parse::<usize>().map(|x| x - 1);
+            let to_res = op_str[5].parse::<usize>().map(|x| x - 1);
+            n_res.and_then(|n| {
+                let from = from_res?;
+                let to = to_res?;
+                Ok(Op { n, from, to })
+            })
         })
         .collect_vec();
 
@@ -73,12 +74,13 @@ fn simulate(stacks_input: Vec<Vec<char>>, ops: Vec<Op>, grouped: bool) -> String
         // let mut group: Vec<char> = vec![];
         let mut group: VecDeque<char> = VecDeque::new();
         for _ in 0..op.n {
-            let c = stacks[op.from].pop().unwrap();
-            // group.push(c);
-            if grouped {
-                group.push_front(c);
-            } else {
-                group.push_back(c);
+            if let Some(c) = stacks[op.from].pop() {
+                // group.push(c);
+                if grouped {
+                    group.push_front(c);
+                } else {
+                    group.push_back(c);
+                }
             }
         }
         // group.reverse();
@@ -89,7 +91,9 @@ fn simulate(stacks_input: Vec<Vec<char>>, ops: Vec<Op>, grouped: bool) -> String
 
     // build a string
     stacks.into_iter().fold("".to_owned(), |mut acc, mut st| {
-        acc.push(st.pop().unwrap());
+        if let Some(c) = st.pop() {
+            acc.push(c);
+        };
         acc
     })
 }
