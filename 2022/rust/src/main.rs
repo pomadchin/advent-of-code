@@ -1,5 +1,6 @@
 mod day03;
 mod day04;
+mod day05;
 mod utils;
 
 fn main() {
@@ -9,6 +10,7 @@ fn main() {
     match day_slice {
         "03" => day03::run(),
         "04" => day04::run(),
+        "05" => day05::run(),
         _ => println!("No valid day given. Possible options are: 01-25."),
     };
 }
