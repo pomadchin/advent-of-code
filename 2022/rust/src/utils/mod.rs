@@ -59,8 +59,5 @@ pub fn tupled<F, S, R, FN>(f: FN) -> impl Fn((F, S)) -> R
 where
     FN: Fn(F, S) -> R,
 {
-    move |tup: (F, S)| {
-        let (fst, snd) = tup;
-        f(fst, snd)
-    }
+    move |tup: (F, S)| f(tup.0, tup.1)
 }

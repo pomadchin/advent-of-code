@@ -21,8 +21,8 @@ fn parse_input(input: Vec<String>) -> Input {
         .unwrap()
         .trim()
         .split("   ")
-        .map(|i| i.parse::<usize>().unwrap())
         .last()
+        .and_then(|i| i.parse::<usize>().ok())
         .unwrap_or(0);
 
     let mut stacks: Vec<Vec<char>> = vec![vec![]; stacks_count];
