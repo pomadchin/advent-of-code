@@ -1,7 +1,7 @@
 use super::utils;
 use itertools::Itertools;
 use lazy_static::lazy_static;
-use std::collections::VecDeque;
+use std::{collections::VecDeque, num::ParseIntError};
 
 #[derive(Debug, Clone)]
 struct Op {
@@ -43,14 +43,10 @@ fn parse_input(input: Vec<String>) -> Input {
         .filter(|s| !s.is_empty())
         .flat_map(|val| {
             let op_str = val.split(" ").collect_vec();
-            let n_res = op_str[1].parse::<i32>();
-            let from_res = op_str[3].parse::<usize>().map(|x| x - 1);
-            let to_res = op_str[5].parse::<usize>().map(|x| x - 1);
-            n_res.and_then(|n| {
-                let from = from_res?;
-                let to = to_res?;
-                Ok(Op { n, from, to })
-            })
+            let n = op_str[1].parse::<i32>()?;
+            let from = op_str[3].parse::<usize>()? - 1;
+            let to = op_str[5].parse::<usize>()? - 1;
+            Ok::<Op, ParseIntError>(Op { n, from, to })
         })
         .collect_vec();
 
