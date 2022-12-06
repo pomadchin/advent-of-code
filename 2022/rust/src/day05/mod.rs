@@ -86,10 +86,7 @@ fn simulate(stacks_input: Vec<Vec<char>>, ops: Vec<Op>, grouped: bool) -> String
     }
 
     // build a string
-    stacks.into_iter().fold("".to_owned(), |mut acc, mut st| {
-        st.pop().into_iter().for_each(|c| acc.push(c));
-        acc
-    })
+    stacks.into_iter().flat_map(|mut st| st.pop()).collect()
 }
 
 fn part1_tup(input: Input) -> String {
