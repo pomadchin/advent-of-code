@@ -71,14 +71,13 @@ fn simulate(stacks_input: Vec<Vec<char>>, ops: Vec<Op>, grouped: bool) -> String
         // let mut group: Vec<char> = vec![];
         let mut group: VecDeque<char> = VecDeque::new();
         for _ in 0..op.n {
-            if let Some(c) = stacks[op.from].pop() {
-                // group.push(c);
+            stacks[op.from].pop().into_iter().for_each(|c| {
                 if grouped {
                     group.push_front(c);
                 } else {
                     group.push_back(c);
                 }
-            }
+            })
         }
         // group.reverse();
 
@@ -88,9 +87,7 @@ fn simulate(stacks_input: Vec<Vec<char>>, ops: Vec<Op>, grouped: bool) -> String
 
     // build a string
     stacks.into_iter().fold("".to_owned(), |mut acc, mut st| {
-        if let Some(c) = st.pop() {
-            acc.push(c);
-        };
+        st.pop().into_iter().for_each(|c| acc.push(c));
         acc
     })
 }
