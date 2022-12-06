@@ -2,6 +2,7 @@ use super::utils;
 use itertools::Itertools;
 use lazy_static::lazy_static;
 use std::{collections::VecDeque, num::ParseIntError};
+use utils::Result;
 
 #[derive(Debug, Clone)]
 struct Op {
@@ -12,15 +13,15 @@ struct Op {
 
 type Input = (Vec<Vec<char>>, Vec<Op>);
 
-fn parse_input(input: Vec<String>) -> Input {
-    let idx = input.iter().position(|s| s.is_empty()).unwrap_or(0);
+fn parse_input(input: Vec<String>) -> Result<Input> {
+    let idx = input.iter().position(|s| s.is_empty()).ok_or("parsing error, no empty line delimeter")?;
     let (stacks_str, ops_str) = input.split_at(idx);
     let stacks_len_max = stacks_str.len() - 1; // the last string is for count
     let stacks_count = stacks_str
         .last()
         .and_then(|x| x.trim().split("   ").last())
         .and_then(|i| i.parse::<usize>().ok())
-        .unwrap_or(0);
+        .ok_or("parsing error, no line with stacks counts")?;
 
     let mut stacks: Vec<Vec<char>> = vec![vec![]; stacks_count];
     for i in stacks_str[0..stacks_len_max].iter() {
@@ -50,14 +51,14 @@ fn parse_input(input: Vec<String>) -> Input {
         })
         .collect_vec();
 
-    (stacks_rev, ops)
+    Ok((stacks_rev, ops))
 }
 
-fn input_example() -> Input {
+fn input_example() -> Result<Input> {
     parse_input(utils::read_file_in_cwd_by_line("src/day05/example.txt"))
 }
 
-fn input() -> Input {
+fn input() -> Result<Input> {
     parse_input(utils::read_file_in_cwd_by_line("src/day05/puzzle1.txt"))
 }
 
@@ -110,8 +111,8 @@ fn part2(stacks_input: Vec<Vec<char>>, ops: Vec<Op>) -> String {
 }
 
 lazy_static! {
-    static ref INPUT_EXAMPLE: Input = input_example();
-    static ref INPUT: Input = input();
+    static ref INPUT_EXAMPLE: Input = input_example().unwrap();
+    static ref INPUT: Input = input().unwrap();
 }
 
 #[cfg(test)]

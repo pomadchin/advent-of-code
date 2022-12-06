@@ -3,10 +3,13 @@ use futures::future::{join_all, try_join_all, Future};
 use std::fs;
 use std::{
     env,
+    error::Error,
     fs::File,
     io::{prelude::*, BufReader},
     path::PathBuf,
 };
+
+pub type Result<T, E = Box<dyn Error + Send + Sync>> = std::result::Result<T, E>;
 
 fn get_current_working_dir() -> PathBuf {
     return env::current_dir().unwrap();
