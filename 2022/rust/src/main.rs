@@ -1,7 +1,9 @@
+mod utils;
+
 mod day03;
 mod day04;
 mod day05;
-mod utils;
+mod day06;
 
 fn main() {
     let day: String = std::env::args().nth(1).expect("No day given. Possible options are: 01-25.");
@@ -11,6 +13,7 @@ fn main() {
         "03" => day03::run(),
         "04" => day04::run(),
         "05" => day05::run(),
+        "06" => day06::run(),
         _ => println!("No valid day given. Possible options are: 01-25."),
     };
 }
