@@ -86,7 +86,7 @@ fn simulate(stacks_input: Vec<Vec<char>>, ops: Vec<Op>, grouped: bool) -> String
     }
 
     // build a string
-    stacks.into_iter().flat_map(|mut st| st.pop()).collect()
+    stacks.into_iter().flat_map(|st| st.last().copied()).collect()
 }
 
 fn part1_tup(input: Input) -> String {
