@@ -64,3 +64,17 @@ where
 {
     move |tup: (F, S)| f(tup.0, tup.1)
 }
+
+pub fn parents(dir: PathBuf) -> Vec<PathBuf> {
+    let mut dir_p = dir;
+    let mut vec = vec![];
+    vec.push(dir_p.clone());
+
+    while let Some(parent) = dir_p.parent() {
+        let pb = PathBuf::from(parent);
+        vec.push(pb.clone());
+        dir_p = pb;
+    }
+
+    vec
+}
