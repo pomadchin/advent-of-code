@@ -1,3 +1,5 @@
+pub mod path;
+
 use chrono::Utc;
 use futures::future::{join_all, try_join_all, Future};
 use std::fs;
@@ -18,7 +20,6 @@ fn get_current_working_dir() -> PathBuf {
 #[allow(dead_code)]
 pub fn read_file_in_cwd_string(file: &str) -> String {
     let file_path = get_current_working_dir().join(file);
-    dbg!(file_path.clone());
     return fs::read_to_string(file_path).unwrap();
 }
 
