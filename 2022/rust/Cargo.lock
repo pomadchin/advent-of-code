@@ -16,6 +16,7 @@ dependencies = [
  "serde",
  "tokio",
  "tuple-conv",
+ "tuples",
 ]
 
 [[package]]
@@ -740,6 +741,12 @@ name = "tuple-conv"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1fd6314683350324c1bb3d71a65fbeacb4e870cb4faf30b28d8a7787fb8116dd"
+
+[[package]]
+name = "tuples"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "446791a5e330a0dc5939f32eba8704c39b39e6f308740e666e4217bf4f50c3f0"
 
 [[package]]
 name = "unicode-ident"
