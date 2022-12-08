@@ -12,12 +12,12 @@ There also exists an alternative [feature/rec-schemes](https://github.com/pomadc
 All input files should be encrypted.
 
 ```bash
-gpg --symmetric --cipher-algo AES256 file.txt
+$ gpg --symmetric --cipher-algo AES256 file.txt
 ```
 
 Decription is done via a GitHub Actions step:
 
-```bash
+```yml
 jobs:
   build:
     runs-on: ubuntu-latest
