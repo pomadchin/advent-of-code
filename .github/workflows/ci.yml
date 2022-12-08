@@ -81,6 +81,13 @@ jobs:
             target/            
           key: ${{ runner.os }}-cargo-${{ hashFiles('2022/rust/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Decrypt GPG files
+        run: |
+          for file in 2022/rust/src/*/*.gpg; do 
+              output="${file%.*}"
+              gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.GPG_PASSPHRASE_INPUTS }}" --output "$output" "$file"
+          done
       
       - name: Check formatting
         uses: actions-rs/cargo@v1

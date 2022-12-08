@@ -79,3 +79,21 @@ pub fn parents(dir: PathBuf) -> Vec<PathBuf> {
 
     vec
 }
+
+#[allow(dead_code)]
+pub fn index(row: usize, col: usize, n: usize) -> usize {
+    row * n + col
+}
+
+pub fn col(idx: usize, n: usize) -> usize {
+    idx % n
+}
+
+pub fn row(idx: usize, n: usize) -> usize {
+    idx / n
+}
+
+#[allow(dead_code)]
+pub fn rc(idx: usize, n: usize) -> (usize, usize) {
+    (row(idx, n), col(idx, n))
+}
