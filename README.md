@@ -9,22 +9,10 @@ There also exists an alternative [feature/rec-schemes](https://github.com/pomadc
 
 #### Encryption
 
-All input files should be encrypted.
+All input files should be encrypted; i.e.:
 
 ```bash
 $ gpg --symmetric --cipher-algo AES256 file.txt
 ```
 
-Decription is done via a GitHub Actions step:
-
-```yml
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Decrypt GPG file
-        run: |
-          gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.GPG_PASSPHRASE_INPUTS }}" --output /path/to/some_file.json some_file.json.gpg
-```
+Decription is done via a GitHub Actions step.
