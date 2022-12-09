@@ -3,6 +3,7 @@ use utils::{index, rc};
 
 use itertools::Itertools;
 use lazy_static::lazy_static;
+use take_until::TakeUntilExt;
 
 type Square = (Vec<u32>, usize);
 
@@ -65,38 +66,42 @@ fn part2(input: Square) -> u32 {
         .enumerate()
         .map(|(idx, v)| (rc(idx, n), v))
         .map(|((row, col), v)| {
-            // results for all 4 scans
-            let mut res = vec![0; 4];
+            // results of all 4 scans
+            //
+            // let mut res = vec![0; 4];
+            // for idx in ((0..row).rev()).map(|r| index(r, col, n)) {
+            //     res[0] += 1;
+            //     if vec[idx] >= v {
+            //         break;
+            //     }
+            // }
+            //
+            // for idx in ((row + 1)..n).map(|r| index(r, col, n)) {
+            //     res[1] += 1;
+            //     if vec[idx] >= v {
+            //         break;
+            //     }
+            // }
+            //
+            // for idx in (0..col).rev().map(|c| index(row, c, n)) {
+            //     res[2] += 1;
+            //     if vec[idx] >= v {
+            //         break;
+            //     }
+            // }
+            //
+            // for idx in ((col + 1)..n).map(|c| index(row, c, n)) {
+            //     res[3] += 1;
+            //     if vec[idx] >= v {
+            //         break;
+            //     }
+            // }
+            // res.into_iter().reduce(|l, r| l * r).unwrap_or_default()
 
-            for idx in ((0..row).rev()).map(|r| index(r, col, n)) {
-                res[0] += 1;
-                if vec[idx] >= v {
-                    break;
-                }
-            }
-
-            for idx in ((row + 1)..n).map(|r| index(r, col, n)) {
-                res[1] += 1;
-                if vec[idx] >= v {
-                    break;
-                }
-            }
-
-            for idx in (0..col).rev().map(|c| index(row, c, n)) {
-                res[2] += 1;
-                if vec[idx] >= v {
-                    break;
-                }
-            }
-
-            for idx in ((col + 1)..n).map(|c| index(row, c, n)) {
-                res[3] += 1;
-                if vec[idx] >= v {
-                    break;
-                }
-            }
-
-            res.into_iter().reduce(|l, r| l * r).unwrap_or_default()
+            ((0..row).rev().map(|r| index(r, col, n)).take_until(|idx| vec[*idx] >= v).count()
+                * ((row + 1)..n).map(|r| index(r, col, n)).take_until(|idx| vec[*idx] >= v).count()
+                * (0..col).rev().map(|c| index(row, c, n)).take_until(|idx| vec[*idx] >= v).count()
+                * ((col + 1)..n).map(|c| index(row, c, n)).take_until(|idx| vec[*idx] >= v).count()) as u32
         })
         .max()
         .unwrap_or(0)
