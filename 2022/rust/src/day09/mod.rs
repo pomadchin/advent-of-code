@@ -4,7 +4,7 @@ extern crate serde;
 use lazy_static::lazy_static;
 use serde::Serialize;
 
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 use std::str::FromStr;
 
 type Pos = (i32, i32);
@@ -15,6 +15,17 @@ enum Direction {
     R,
     D,
     U,
+}
+
+impl Direction {
+    fn step(&self) -> Pos {
+        match *self {
+            Direction::L => (-1, 0),
+            Direction::R => (1, 0),
+            Direction::D => (0, -1),
+            Direction::U => (0, 1),
+        }
+    }
 }
 
 impl FromStr for Direction {
@@ -62,10 +73,10 @@ fn parse_input(input: Vec<String>) -> Vec<Move> {
         .collect()
 }
 
-fn move_head(start: Pos, d: Direction) -> Pos {
-    let (xs, ys) = start;
-    let (dx, dy) = DIRS[&d];
-    (xs + dx, ys + dy)
+fn move_head(head: Pos, d: Direction) -> Pos {
+    let (x, y) = head;
+    let (dx, dy) = d.step();
+    (x + dx, y + dy)
 }
 
 fn move_tail(head: Pos, tail: Pos) -> Pos {
@@ -91,10 +102,8 @@ fn move_tail(head: Pos, tail: Pos) -> Pos {
         }
     } else {
         if (hx - tx).abs() > 1 || (hy - ty).abs() > 1 {
-            let (dx, dy) = ((hx - tx).signum(), (hy - ty).signum());
-
             // dx and dy should have the same sign?
-
+            let (dx, dy) = ((hx - tx).signum(), (hy - ty).signum());
             tx += dx;
             ty += dy;
         }
@@ -122,6 +131,7 @@ fn part1_simple(input: Vec<Move>) -> usize {
     visited.len()
 }
 
+// generalize for the rope size
 fn simulate(input: Vec<Move>, rope_size: usize) -> usize {
     let t: Pos = (0, 0);
 
@@ -152,9 +162,6 @@ fn part2(input: Vec<Move>) -> usize {
 }
 
 lazy_static! {
-    static ref DIRS: HashMap<Direction, Pos> = [(Direction::L, (-1, 0)), (Direction::R, (1, 0)), (Direction::D, (0, -1)), (Direction::U, (0, 1))]
-        .into_iter()
-        .collect();
     static ref INPUT_EXAMPLE1: Vec<Move> = input_example1();
     static ref INPUT_EXAMPLE2: Vec<Move> = input_example2();
     static ref INPUT: Vec<Move> = input();
