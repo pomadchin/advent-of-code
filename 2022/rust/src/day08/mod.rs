@@ -23,7 +23,7 @@ fn parse_input(input: Vec<String>) -> Square {
 
     let res = input
         .into_iter()
-        .flat_map(|line| line.chars().map(|c| c.to_digit(R).unwrap_or(0)).collect_vec())
+        .flat_map(|line| line.chars().flat_map(|c| c.to_digit(R)).collect_vec())
         .collect_vec();
 
     (res, n)
