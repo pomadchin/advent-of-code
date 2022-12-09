@@ -13,17 +13,15 @@ use std::{
 
 pub type Result<T, E = Box<dyn Error + Send + Sync>> = std::result::Result<T, E>;
 
-fn get_current_working_dir() -> PathBuf {
+pub fn get_current_working_dir() -> PathBuf {
     return env::current_dir().unwrap();
 }
 
-#[allow(dead_code)]
 pub fn read_file_in_cwd_string(file: &str) -> String {
     let file_path = get_current_working_dir().join(file);
     return fs::read_to_string(file_path).unwrap();
 }
 
-#[allow(dead_code)]
 pub fn read_file_in_cwd_by_line(file: &str) -> Vec<String> {
     let file_path = get_current_working_dir().join(file);
     let file = File::open(file_path).expect("no such file");
@@ -58,7 +56,6 @@ where
     join_all(futures)
 }
 
-#[allow(dead_code)]
 pub fn tupled<F, S, R, FN>(f: FN) -> impl Fn((F, S)) -> R
 where
     FN: Fn(F, S) -> R,
@@ -80,7 +77,6 @@ pub fn parents(dir: PathBuf) -> Vec<PathBuf> {
     vec
 }
 
-#[allow(dead_code)]
 pub fn index(row: usize, col: usize, n: usize) -> usize {
     row * n + col
 }
@@ -93,7 +89,6 @@ pub fn row(idx: usize, n: usize) -> usize {
     idx / n
 }
 
-#[allow(dead_code)]
 pub fn rc(idx: usize, n: usize) -> (usize, usize) {
     (row(idx, n), col(idx, n))
 }
