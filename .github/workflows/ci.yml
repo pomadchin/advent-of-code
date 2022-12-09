@@ -78,7 +78,7 @@ jobs:
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
-            target/            
+            2022/rust/target/            
           key: ${{ runner.os }}-cargo-${{ hashFiles('2022/rust/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-cargo-
 
@@ -86,6 +86,7 @@ jobs:
         run: |
           for file in 2022/rust/src/*/*.gpg; do 
               output="${file%.*}"
+              echo "$output decrypted"
               gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.GPG_PASSPHRASE_INPUTS }}" --output "$output" "$file"
           done
       

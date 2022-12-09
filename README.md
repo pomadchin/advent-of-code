@@ -12,7 +12,13 @@ There also exists an alternative [feature/rec-schemes](https://github.com/pomadc
 All input files should be encrypted; i.e.:
 
 ```bash
+# single file
 $ gpg --batch --passphrase "$GPG_PASSPHRASE_INPUTS" --symmetric --cipher-algo AES256 file.txt
+
+# multiple files
+for file in 2022/rust/src/*/*.txt; do
+    gpg --batch --passphrase "$GPG_PASSPHRASE_INPUTS" --symmetric --cipher-algo AES256 "$file"
+done
 ```
 
 Decription is done via a GitHub Actions step.
