@@ -12,7 +12,7 @@ There also exists an alternative [feature/rec-schemes](https://github.com/pomadc
 All input files should be encrypted; i.e.:
 
 ```bash
-$ gpg --symmetric --cipher-algo AES256 file.txt
+$ gpg --passphrase "$GPG_PASSPHRASE_INPUT" --symmetric --cipher-algo AES256 file.txt
 ```
 
 Decription is done via a GitHub Actions step.
