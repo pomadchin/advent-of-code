@@ -92,3 +92,21 @@ pub fn row(idx: usize, n: usize) -> usize {
 pub fn rc(idx: usize, n: usize) -> (usize, usize) {
     (row(idx, n), col(idx, n))
 }
+
+#[allow(dead_code)]
+pub fn index_i32(row: i32, col: i32, n: i32) -> i32 {
+    row * n + col
+}
+
+pub fn col_i32(idx: i32, n: i32) -> i32 {
+    idx % n
+}
+
+pub fn row_i32(idx: i32, n: i32) -> i32 {
+    idx / n
+}
+
+#[allow(dead_code)]
+pub fn rc_i32(idx: i32, n: i32) -> (i32, i32) {
+    (row_i32(idx, n), col_i32(idx, n))
+}

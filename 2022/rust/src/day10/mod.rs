@@ -45,12 +45,12 @@ impl State {
     fn tick(&mut self) {
         // part 2
         let cols = COLS as i32;
-        let col = self.ticks % cols;
-        let row = (self.ticks / cols) as usize;
+        let col = utils::col_i32(self.ticks, cols);
+        let row = utils::row_i32(self.ticks, cols) as usize;
         if row < ROWS {
             // the sprite is 3 pixels wide, col is the middle
             // if we're in 3 pixels bounds within x register print #
-            // If the sprite is positioned such that one of its three pixels is the pixel currently being drawn.
+            // if the sprite is positioned such that one of its three pixels is the pixel currently being drawn
             if (self.x - 1 <= col) && (col <= self.x + 1) {
                 self.display[row].push('#');
             } else {
@@ -67,10 +67,10 @@ impl State {
 
     #[allow(dead_code)]
     fn print_display(&self) {
-        println!("{}", self.get_display());
+        println!("{}", self.render_display());
     }
 
-    fn get_display(&self) -> String {
+    fn render_display(&self) -> String {
         self.display.clone().join("\n")
     }
 }
@@ -116,7 +116,7 @@ fn part1(input: Vec<Expr>) -> i32 {
 }
 
 fn part2(input: Vec<Expr>) -> String {
-    emulate(input).get_display()
+    emulate(input).render_display()
 }
 
 lazy_static! {
