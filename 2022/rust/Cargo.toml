@@ -18,3 +18,4 @@ tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
 tuple-conv = "1.0.1"
 tuples = "1.6.0"
 take-until = "0.1.0"
+indoc = "1.0.7"
