@@ -180,5 +180,5 @@ pub fn run() {
     let input = INPUT.to_owned();
 
     println!("Part 1: {}", part1(input.clone()));
-    println!("Part 2: \n {}", part2(input.clone()));
+    println!("Part 2: {}", part2(input.clone()));
 }
