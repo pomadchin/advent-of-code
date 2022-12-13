@@ -18,25 +18,23 @@ fn parse_input(input: String) -> Vec<Vec<String>> {
     input.split("\n\n").map(|s| s.lines().map(|s| s.replace("10", "X").to_owned()).collect()).collect()
 }
 
+fn prepend(head: &[char], tail: &[char]) -> Vec<char> {
+    let mut d = tail.into_iter().map(|c| *c).collect::<VecDeque<_>>();
+    head.iter().rev().for_each(|c| d.push_front(*c));
+    d.into_iter().collect_vec()
+}
+
 fn compare_packets(left_chars: &[char], right_chars: &[char]) -> bool {
     match (left_chars[0], right_chars[0]) {
         (l, r) if l == r => compare_packets(&left_chars[1..], &right_chars[1..]),
         (']', _) => true,
         (_, ']') => false,
         ('[', r) => {
-            let mut vd = right_chars[1..].into_iter().map(|c| *c).collect::<VecDeque<_>>();
-            vd.push_front(']');
-            vd.push_front(r);
-            let v = vd.into_iter().collect_vec();
-
+            let v = prepend(&[r, ']'], &right_chars[1..]);
             compare_packets(&left_chars[1..], &v)
         }
         (l, '[') => {
-            let mut vd = left_chars[1..].into_iter().map(|c| *c).collect::<VecDeque<_>>();
-            vd.push_front(']');
-            vd.push_front(l);
-            let v = vd.into_iter().collect_vec();
-
+            let v = prepend(&[l, ']'], &left_chars[1..]);
             compare_packets(&v, &right_chars[1..])
         }
         (l, r) => l < r,
