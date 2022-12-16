@@ -57,8 +57,7 @@ fn find_divider(input: &Vec<Vec<char>>, str: &str) -> usize {
         .into_iter()
         .map(|v| v.into_iter().collect::<String>())
         .enumerate()
-        .filter(|(_, s)| s == str)
-        .next()
+        .find(|(_, s)| s == str)
         .map(|(idx, _)| idx + 1)
         .unwrap_or_default()
 }
