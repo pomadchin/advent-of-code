@@ -256,7 +256,7 @@ mod tests {
     }
 
     #[test]
-    #[ignore] // takes > 25s to run
+    #[ignore = "takes > 25s to run"]
     fn q2() {
         let input = INPUT.to_owned();
         assert_eq!(part2(input), 12051287042458);
