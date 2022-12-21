@@ -65,11 +65,19 @@ struct Blueprint {
     clay: Cost,
     obsidian: Cost,
     geode: Cost,
+    max_ore_cost: i32,
 }
 
 impl Blueprint {
-    fn new(n: i32, ore: Cost, clay: Cost, obsidian: Cost, geode: Cost) -> Blueprint {
-        Blueprint { n, ore, clay, obsidian, geode }
+    fn new(n: i32, ore: Cost, clay: Cost, obsidian: Cost, geode: Cost, max_ore_cost: i32) -> Blueprint {
+        Blueprint {
+            n,
+            ore,
+            clay,
+            obsidian,
+            geode,
+            max_ore_cost,
+        }
     }
 }
 
@@ -97,8 +105,9 @@ impl FromStr for Blueprint {
                 let clay_cost = Cost::new(clay_vec[0], 0, 0, 0);
                 let obsidian_cost = Cost::new(obsidian_vec[0], obsidian_vec[1], 0, 0);
                 let geode_cost = Cost::new(geode_vec[0], 0, geode_vec[1], 0);
+                let max_ore_cost = vec![ore_cost.ore, clay_cost.ore, obsidian_cost.ore, geode_cost.ore].into_iter().max()?;
 
-                Some(Blueprint::new(n, ore_cost, clay_cost, obsidian_cost, geode_cost))
+                Some(Blueprint::new(n, ore_cost, clay_cost, obsidian_cost, geode_cost, max_ore_cost))
             })
             .ok_or("unable to parse blueprint".to_owned())
     }
@@ -201,17 +210,17 @@ fn tick(state: State, bp: &Blueprint) -> Vec<State> {
     res.push_back(computed.clone());
 
     // if there are more resources the cost of the ore robot
-    if state.resources.ore >= bp.ore.ore {
+    if state.resources.ore >= bp.ore.ore && state.ore_robots < bp.max_ore_cost {
         res.push_back(computed.build_ore_robot(&bp.ore));
     }
 
     // if there are more resources the cost of the clay robot
-    if state.resources.ore >= bp.clay.ore {
+    if state.resources.ore >= bp.clay.ore && state.clay_robots < bp.obsidian.clay {
         res.push_back(computed.build_clay_robot(&bp.clay));
     }
 
     // if there are more resources the cost of the obsidian robot
-    if state.resources.ore >= bp.obsidian.ore && state.resources.clay >= bp.obsidian.clay {
+    if state.resources.ore >= bp.obsidian.ore && state.resources.clay >= bp.obsidian.clay && state.obsidian_robots < bp.geode.obsidian {
         res.push_back(computed.build_obsidian_robot(&bp.obsidian));
     }
 
@@ -270,7 +279,7 @@ fn part1(input: Blueprints) -> i32 {
 }
 
 fn part2(input: Blueprints) -> i32 {
-    input.into_iter().map(|b| resolve(32, b)).product()
+    input.into_iter().take(3).map(|b| resolve(32, b)).product()
 }
 
 lazy_static! {
@@ -290,21 +299,19 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
+    #[ignore = "takes > 14s to run"]
     fn q1() {
         let input = INPUT.to_owned();
         assert_eq!(part1(input), 1382);
     }
 
     #[test]
-    #[ignore]
     fn q2e() {
         let input = INPUT_EXAMPLE.to_owned();
         assert_eq!(part2(input), 3472);
     }
 
     #[test]
-    #[ignore]
     fn q2() {
         let input = INPUT.to_owned();
         assert_eq!(part2(input), 31740);
