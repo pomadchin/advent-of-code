@@ -111,7 +111,7 @@ fn elf_move(elf: Point, elves: HashSet<Point>, order: VecDeque<Point>) -> Option
     // If there is no Elf in the W, NW, or SW adjacent positions, the Elf proposes moving west one step.
     // If there is no Elf in the E, NE, or SE adjacent positions, the Elf proposes moving east one step.
 
-    let (nw, n, ne, w, e, sw, s, se) = elf.adj().iter().map(|e| elves.contains(e)).collect_tuple::<(_, _, _, _, _, _, _, _)>().unwrap();
+    let (nw, n, ne, w, e, sw, s, se) = elf.adj().iter().map(|e| elves.contains(e)).collect_tuple::<(_, _, _, _, _, _, _, _)>()?;
     let move_possible = nw || n || ne || w || e || sw || s || se;
 
     if move_possible {

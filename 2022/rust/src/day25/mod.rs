@@ -35,8 +35,7 @@ fn part1(input: Vec<Vec<(usize, char)>>) -> String {
             sum = sum + 1;
         }
 
-        let conv = &FROM_DIGITS;
-        res.push(conv.get(&d).unwrap())
+        FROM_DIGITS.get(&d).into_iter().for_each(|i| res.push(i))
     }
 
     res.into_iter().rev().collect()
