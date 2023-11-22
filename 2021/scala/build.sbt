@@ -1,6 +1,6 @@
 name         := "advent-of-code-2021"
 version      := "0.1.0-SNAPSHOT"
-scalaVersion := "3.2.0"
+scalaVersion := "3.3.1"
 organization := "com.pomadchin"
 scalacOptions ++= Seq(
   "-deprecation",
@@ -15,5 +15,5 @@ scalacOptions ++= Seq(
   "-Ykind-projector"
 )
 
-libraryDependencies += "org.scalameta" %% "munit" % "0.7.29" % Test
+libraryDependencies += "org.scalameta" %% "munit" % "1.0.0-M10" % Test
 testFrameworks += new TestFramework("munit.Framework")
