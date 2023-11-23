@@ -149,4 +149,31 @@ jobs:
         with:
           command: test
           args: --manifest-path 2023/rust/Cargo.toml
+
+  build2023-zig:
+    name: Build and Test (Zig 2023)
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != 'pomadchin/advent-of-code'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: goto-bus-stop/setup-zig@v2
+        with:
+          version: 0.11.0
+          cache: true
+
+      - name: Decrypt GPG files
+        run: |
+          if compgen -G "2023/zig/src/*/*.gpg" > /dev/null; then
+            for file in 2023/zig/src/*/*.gpg; do 
+                output="${file%.*}"
+                echo "$output decrypted"
+                gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.GPG_PASSPHRASE_INPUTS }}" --output "$output" "$file"
+            done
+          fi
+
+      - name: Check formatting
+        run: cd 2023/zig; zig fmt --check src/*.zig && zig fmt --check src/*/*.zig
+
+      - name: Build project
+        run: cd 2023/zig; zig build test_all
   
