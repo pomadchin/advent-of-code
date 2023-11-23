@@ -17,10 +17,8 @@ pub fn build(b: *std.Build) void {
 
     setup_main(b, target, optimize);
 
-    comptime var counter: usize = 1;
-    inline while (counter <= 25) {
-        setup_day(b, target, optimize, counter);
-        counter += 1;
+    for (1..26) |day| {
+        setup_day(b, target, optimize, day);
     }
 
     setup_test_all(b, target, optimize);
@@ -46,7 +44,7 @@ pub fn setup_day(
     b: *std.build.Builder,
     target: std.zig.CrossTarget,
     optimize: std.builtin.Mode,
-    day: u32,
+    day: usize,
 ) void {
     const path = b.fmt("day{:0>2}", .{day});
     const root_src = b.fmt("src/{s}/main.zig", .{path});
