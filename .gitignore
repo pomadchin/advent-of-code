@@ -57,6 +57,16 @@ metals.sbt
 
 .bsp
 
+# Cargo 
+
+target/
+
+# Zig
+
+zig-cache/
+zig-out/
+build_runner.zig
+
 # Terraform
 
 .terraform
@@ -92,3 +102,5 @@ derby.log
 metastore_db/
 *.log
 .sdkmanrc
+
+*.txt
