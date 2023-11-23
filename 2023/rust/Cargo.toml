@@ -1,0 +1,23 @@
+[package]
+name = "advent-of-code-2022"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+async-std = "1.12.0"
+chrono = "0.4.23"
+futures = "0.3.25"
+itertools = "0.10.5"
+lazy_static = "1.4.0"
+path-clean = "0.1.0"
+regex = "1.7.0"
+serde = { version = "1", features = ["derive"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+tuple-conv = "1.0.1"
+tuples = "1.6.0"
+take-until = "0.1.0"
+indoc = "1.0.7"
+substring = "1.4.5"
+priority-queue = "1.3.0"
