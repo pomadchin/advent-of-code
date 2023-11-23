@@ -1,5 +1,18 @@
+const std = @import("std");
+
+pub fn main() !void {
+    const stdout_file = std.io.getStdOut().writer();
+    var bw = std.io.bufferedWriter(stdout_file);
+    const stdout = bw.writer();
+
+    try stdout.print("zig build run_all is a noop, try running zig build test_all \n", .{});
+
+    try bw.flush(); // don't forget to flush!
+}
+
 test {
     _ = @import("util.zig");
+    _ = @import("main.zig");
     _ = @import("day01/main.zig");
     _ = @import("day02/main.zig");
     _ = @import("day03/main.zig");
