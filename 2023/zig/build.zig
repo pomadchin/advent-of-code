@@ -109,6 +109,17 @@ pub fn setup_module(
         .optimize = optimize,
     });
 
+    // exe.addAnonymousModule("util", .{ .source_file = .{ .path = "src/util.zig" } });
+    // unit_tests.addAnonymousModule("util", .{ .source_file = .{ .path = "src/util.zig" } });
+
+    const util_module = b.createModule(.{
+        .source_file = .{ .path = "src/util.zig" },
+        .dependencies = &.{},
+    });
+
+    exe.addModule("util", util_module);
+    unit_tests.addModule("util", util_module);
+
     const run_unit_tests = b.addRunArtifact(unit_tests);
 
     const test_step_name = if (path.len == 0) "test" else b.fmt("test_{s}", .{path});

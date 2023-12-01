@@ -1,18 +1,17 @@
 const std = @import("std");
+const util = @import("util");
 
-const Tuple = std.meta.Tuple;
-const Str = []const u8;
+const Tuple = util.Tuple;
+const Str = util.Str;
 
 pub fn part1(input: Str) !i32 {
-    var lines = std.mem.split(u8, input, "\n");
+    var lines = util.split(u8, input, "\n");
     var res: i32 = 0;
 
     while (lines.next()) |line| {
         var len: usize = line.len;
 
-        if (len == 0) {
-            continue;
-        }
+        if (len == 0) continue;
 
         var left: ?u8 = null;
         var right: ?u8 = left;
@@ -20,7 +19,7 @@ pub fn part1(input: Str) !i32 {
         for (0..len) |i| {
             if (left != null) break;
 
-            if (std.ascii.isDigit(line[i])) {
+            if (util.isDigit(line[i])) {
                 left = line[i];
                 break;
             }
@@ -30,13 +29,13 @@ pub fn part1(input: Str) !i32 {
         while (i >= 0) : (i -= 1) {
             if (right != null) break;
 
-            if (std.ascii.isDigit(line[i])) {
+            if (util.isDigit(line[i])) {
                 right = line[i];
                 break;
             }
         }
 
-        var digit = try std.fmt.parseInt(i32, &[_]u8{ left.?, right.? }, 10);
+        var digit = try util.parseInt(i32, &[_]u8{ left.?, right.? }, 10);
         res += digit;
     }
 
@@ -48,15 +47,13 @@ pub fn part2(input: Str) !i32 {
         .{ "one", '1' }, .{ "two", '2' }, .{ "three", '3' }, .{ "four", '4' }, .{ "five", '5' }, .{ "six", '6' }, .{ "seven", '7' }, .{ "eight", '8' }, .{ "nine", '9' },
     };
 
-    var lines = std.mem.split(u8, input, "\n");
+    var lines = util.split(u8, input, "\n");
     var res: i32 = 0;
 
     while (lines.next()) |line| {
         var len = line.len;
 
-        if (len == 0) {
-            continue;
-        }
+        if (len == 0) continue;
 
         var left: ?u8 = null;
         var right: ?u8 = left;
@@ -64,14 +61,14 @@ pub fn part2(input: Str) !i32 {
         outer: for (0..len) |i| {
             if (left != null) break;
 
-            if (std.ascii.isDigit(line[i])) {
+            if (util.isDigit(line[i])) {
                 left = line[i];
                 break;
             }
 
             for (DIGITS) |tup| {
                 var str_repr = tup[0];
-                if ((i + str_repr.len < len) and std.mem.eql(u8, line[i .. i + str_repr.len], str_repr)) {
+                if ((i + str_repr.len < len) and util.eql(u8, line[i .. i + str_repr.len], str_repr)) {
                     left = tup[1];
                     break :outer;
                 }
@@ -82,21 +79,21 @@ pub fn part2(input: Str) !i32 {
         outer: while (i >= 0) : (i -= 1) {
             if (right != null) break;
 
-            if (std.ascii.isDigit(line[i])) {
+            if (util.isDigit(line[i])) {
                 right = line[i];
                 break;
             }
 
             for (DIGITS) |tup| {
                 var str_repr = tup[0];
-                if (i >= str_repr.len and std.mem.eql(u8, line[(i - str_repr.len + 1) .. i + 1], str_repr)) {
+                if (i >= str_repr.len and util.eql(u8, line[(i - str_repr.len + 1) .. i + 1], str_repr)) {
                     right = tup[1];
                     break :outer;
                 }
             }
         }
 
-        var digit = try std.fmt.parseInt(i32, &[_]u8{ left.?, right.? }, 10);
+        var digit = try util.parseInt(i32, &[_]u8{ left.?, right.? }, 10);
         res += digit;
     }
 
