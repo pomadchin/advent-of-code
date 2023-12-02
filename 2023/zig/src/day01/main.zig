@@ -106,26 +106,26 @@ test "example-part1" {
     const actual = try part1(@embedFile("example1.txt"));
     const expected: i32 = 142;
 
-    try std.testing.expectEqual(expected, actual);
+    try util.expectEqual(expected, actual);
 }
 
 test "example-part2" {
     const actual = try part2(@embedFile("example2.txt"));
     const expected: i32 = 281;
 
-    try std.testing.expectEqual(expected, actual);
+    try util.expectEqual(expected, actual);
 }
 
 test "puzzle-part1" {
     const actual = try part1(@embedFile("puzzle1.txt"));
     const expected: i32 = 54634;
 
-    try std.testing.expectEqual(expected, actual);
+    try util.expectEqual(expected, actual);
 }
 
 test "puzzle-part2" {
     const actual = try part2(@embedFile("puzzle2.txt"));
     const expected: i32 = 53855;
 
-    try std.testing.expectEqual(expected, actual);
+    try util.expectEqual(expected, actual);
 }

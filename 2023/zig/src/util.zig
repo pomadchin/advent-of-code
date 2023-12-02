@@ -169,9 +169,9 @@ pub fn readInputFile(filename: []const u8, allocator: std.mem.Allocator) ![]cons
     return try file.reader().readAllAlloc(allocator, fileSize);
 }
 
-const expect = std.testing.expect;
-const expectEqual = std.testing.expectEqual;
-const expectEqualDeep = std.testing.expectEqualDeep;
+pub const expect = std.testing.expect;
+pub const expectEqual = std.testing.expectEqual;
+pub const expectEqualDeep = std.testing.expectEqualDeep;
 
 test "splitIntoBuf" {
     var buf: [8][]const u8 = undefined;

@@ -1,8 +1,6 @@
 const std = @import("std");
 const util = @import("util");
 
-const assert = std.debug.assert;
-
 const Str = util.Str;
 
 const Game = struct {
@@ -21,7 +19,7 @@ pub fn parseGame(line: Str) !Game {
     var intBuf: [1]u32 = undefined;
     while (balls.next()) |part| {
         var nums = try util.extractIntsIntoBuf(u32, part, &intBuf);
-        assert(nums.len == 1);
+        util.assert(nums.len == 1);
         const num = nums[0];
 
         if (std.mem.endsWith(u8, part, "green")) {
@@ -101,26 +99,26 @@ test "example-part1" {
     const actual = try part1(@embedFile("example1.txt"));
     const expected = @as(u32, 8);
 
-    try std.testing.expectEqual(expected, actual);
+    try util.expectEqual(expected, actual);
 }
 
 test "example-part2" {
     const actual = try part2(@embedFile("example1.txt"));
     const expected = @as(u32, 2286);
 
-    try std.testing.expectEqual(expected, actual);
+    try util.expectEqual(expected, actual);
 }
 
 test "input-part1" {
     const actual = try part1(@embedFile("input1.txt"));
     const expected = @as(u32, 3059);
 
-    try std.testing.expectEqual(expected, actual);
+    try util.expectEqual(expected, actual);
 }
 
 test "input-part2" {
     const actual = try part2(@embedFile("input1.txt"));
     const expected = @as(u32, 65371);
 
-    try std.testing.expectEqual(expected, actual);
+    try util.expectEqual(expected, actual);
 }
