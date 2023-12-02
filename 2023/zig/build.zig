@@ -117,8 +117,24 @@ pub fn setup_module(
         .dependencies = &.{},
     });
 
+    const queue_module = b.createModule(.{
+        .source_file = .{ .path = "src/queue.zig" },
+        .dependencies = &.{},
+    });
+
+    const bufIter_module = b.createModule(.{
+        .source_file = .{ .path = "src/buf-iter.zig" },
+        .dependencies = &.{},
+    });
+
     exe.addModule("util", util_module);
     unit_tests.addModule("util", util_module);
+
+    exe.addModule("queue", queue_module);
+    unit_tests.addModule("queue", queue_module);
+
+    exe.addModule("buf-iter", bufIter_module);
+    unit_tests.addModule("buf-iter", bufIter_module);
 
     const run_unit_tests = b.addRunArtifact(unit_tests);
 
