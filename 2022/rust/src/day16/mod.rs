@@ -35,7 +35,7 @@ impl FromStr for Valve {
         let label = VALVE_LABEL_REGEX
             .as_ref()
             .map_err(|e| e.to_string())?
-            .captures_iter(s.clone())
+            .captures_iter(s)
             .flat_map(|c| c.get(1))
             .map(|m| m.as_str().to_owned())
             .next()
@@ -44,7 +44,7 @@ impl FromStr for Valve {
         let rate = VALVE_RATE_REGEX
             .as_ref()
             .map_err(|e| e.to_string())?
-            .captures_iter(s.clone())
+            .captures_iter(s)
             .flat_map(|c| c.get(1))
             .map(|m| m.as_str().to_owned())
             .next()
