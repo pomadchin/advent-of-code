@@ -10,6 +10,8 @@ pub const Str = []const u8;
 pub var gpa_impl = std.heap.GeneralPurposeAllocator(.{}){};
 pub const gpa = gpa_impl.allocator();
 
+pub const test_allocator = std.testing.allocator;
+
 // Add utility functions here
 
 // Useful stdlib functions
@@ -42,3 +44,40 @@ pub const asc = std.sort.asc;
 pub const desc = std.sort.desc;
 
 pub const isDigit = std.ascii.isDigit;
+
+pub fn splitStr(buffer: []const u8, delimiter: []const u8) std.mem.SplitIterator(u8, std.mem.DelimiterType.sequence) {
+    assert(delimiter.len != 0);
+    return .{
+        .index = 0,
+        .buffer = buffer,
+        .delimiter = delimiter,
+    };
+}
+
+pub fn foldSlice(
+    comptime T: type,
+    slice: []const T,
+    initial: T,
+    func: *const fn (T, T) T,
+) T {
+    var acc = initial;
+    for (slice) |element| acc = func(acc, element);
+    return acc;
+}
+
+// var acc = util.foldIteratorStrMap(usize, bag.valueIterator(), 1, struct {
+//     fn func(a: usize, x: usize) usize {
+//         return a * x;
+//     }
+// }.func);
+pub fn foldIteratorStrMap(
+    comptime T: type,
+    iterator: StrMap(T).ValueIterator,
+    initial: T,
+    func: *const fn (T, T) T,
+) T {
+    var acc = initial;
+    var it = iterator;
+    while (it.next()) |element| acc = func(acc, element.*);
+    return acc;
+}

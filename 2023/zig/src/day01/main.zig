@@ -103,21 +103,29 @@ pub fn part2(input: Str) !i32 {
 pub fn main() !void {}
 
 test "example-part1" {
-    const res = try part1(@embedFile("example1.txt"));
-    try std.testing.expectEqual(res, 142);
+    const actual = try part1(@embedFile("example1.txt"));
+    const expected: i32 = 142;
+
+    try std.testing.expectEqual(expected, actual);
 }
 
 test "example-part2" {
-    const res = try part2(@embedFile("example2.txt"));
-    try std.testing.expectEqual(res, 281);
+    const actual = try part2(@embedFile("example2.txt"));
+    const expected: i32 = 281;
+
+    try std.testing.expectEqual(expected, actual);
 }
 
 test "puzzle-part1" {
-    const res = try part1(@embedFile("puzzle1.txt"));
-    try std.testing.expectEqual(res, 54634);
+    const actual = try part1(@embedFile("puzzle1.txt"));
+    const expected: i32 = 54634;
+
+    try std.testing.expectEqual(expected, actual);
 }
 
 test "puzzle-part2" {
-    const res = try part2(@embedFile("puzzle2.txt"));
-    try std.testing.expectEqual(res, 53855);
+    const actual = try part2(@embedFile("puzzle2.txt"));
+    const expected: i32 = 53855;
+
+    try std.testing.expectEqual(expected, actual);
 }
