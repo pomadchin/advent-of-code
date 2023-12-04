@@ -55,8 +55,8 @@ pub fn part1(input: Str) !u32 {
                         // outside of the matrix
                         if (nrowi < 0 or nrowi >= rows or ncoli < 0 or ncoli >= cols) continue;
 
-                        var nrow = @as(usize, @intCast(nrowi));
-                        var ncol = @as(usize, @intCast(ncoli));
+                        var nrow: usize = @intCast(nrowi);
+                        var ncol: usize = @intCast(ncoli);
 
                         var nchar = matrix[nrow][ncol];
 
@@ -141,8 +141,8 @@ pub fn part2(input: Str) !u32 {
                         // next outside of the matrix
                         if (nrowi < 0 or nrowi >= rows or ncoli < 0 or ncoli >= cols) continue;
 
-                        var nrow = @as(usize, @intCast(nrowi));
-                        var ncol = @as(usize, @intCast(ncoli));
+                        var nrow: usize = @intCast(nrowi);
+                        var ncol: usize = @intCast(ncoli);
 
                         var nchar = matrix[nrow][ncol];
 
