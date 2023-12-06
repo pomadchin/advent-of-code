@@ -95,6 +95,12 @@ pub fn part1(input: Str) !i64 {
 }
 
 pub fn part2(input: Str) !i64 {
+    // use arena allocator to ensure that none ArrayLists are cleaned
+    var arena = util.arena_gpa;
+    defer arena.deinit();
+
+    var allocator = arena.allocator();
+
     var lines = util.splitStr(input, "\n");
 
     // buf location determines scope ownership
@@ -112,12 +118,12 @@ pub fn part2(input: Str) !i64 {
         defer ranges.deinit();
 
         // fill in the queue
-        var q = queue.Queue(SRange).init(util.gpa);
+        var q = queue.Queue(SRange).init(allocator);
         for (seeds) |item| try q.enqueue(item);
 
         // std.debug.print("\nseeds: {any}\n", .{seeds});
 
-        var seeds_new = std.ArrayList(SRange).init(util.gpa);
+        var seeds_new = std.ArrayList(SRange).init(allocator);
 
         while (!q.isEmpty()) {
             var r: SRange = q.dequeue().?;
@@ -155,6 +161,7 @@ pub fn part2(input: Str) !i64 {
             // not found => it's our seed candidate aka id mapping
             if (!found) try seeds_new.append(r);
         }
+
         seeds = seeds_new.items;
     }
 

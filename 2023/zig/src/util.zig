@@ -12,6 +12,9 @@ pub const gpa = gpa_impl.allocator();
 
 pub const test_allocator = std.testing.allocator;
 
+pub const arena_gpa = std.heap.ArenaAllocator.init(gpa);
+pub const arena_test = std.heap.ArenaAllocator.init(test_allocator);
+
 // Add utility functions here
 
 // Useful stdlib functions
