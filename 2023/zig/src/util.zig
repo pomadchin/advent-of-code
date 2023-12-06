@@ -27,6 +27,8 @@ pub const trim = std.mem.trim;
 pub const sliceMin = std.mem.min;
 pub const sliceMax = std.mem.max;
 pub const eql = std.mem.eql;
+pub const startsWith = std.mem.startsWith;
+pub const endsWith = std.mem.endsWith;
 
 pub const parseInt = std.fmt.parseInt;
 pub const parseFloat = std.fmt.parseFloat;
@@ -45,11 +47,13 @@ pub const desc = std.sort.desc;
 
 pub const isDigit = std.ascii.isDigit;
 
-pub fn splitStr(buffer: []const u8, delimiter: []const u8) std.mem.SplitIterator(u8, std.mem.DelimiterType.sequence) {
+pub const SplitStringIterator = std.mem.SplitIterator(u8, std.mem.DelimiterType.sequence);
+
+pub fn splitStr(buffer: []const u8, delimiter: []const u8) SplitStringIterator {
     return std.mem.split(u8, buffer, delimiter);
 }
 
-pub fn splitStrDropFirst(buffer: []const u8, delimiter: []const u8) std.mem.SplitIterator(u8, std.mem.DelimiterType.sequence) {
+pub fn splitStrDropFirst(buffer: []const u8, delimiter: []const u8) SplitStringIterator {
     var it = splitStr(buffer, delimiter);
     _ = it.next().?;
     return it;
