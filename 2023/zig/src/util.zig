@@ -64,7 +64,8 @@ pub fn product(comptime T: type, n: usize, k: usize, str: []const T, allocator: 
 // dfs / backtracking for the product
 fn enumerate(comptime T: type, curr: *std.ArrayList(T), start: usize, k: usize, n: usize, str: []const T, res: *std.ArrayList(std.ArrayList(T))) !void {
     if (curr.items.len == k) {
-        try res.append(try curr.clone());
+        var copy = try curr.clone();
+        try res.append(copy);
         return;
     }
 
@@ -72,8 +73,7 @@ fn enumerate(comptime T: type, curr: *std.ArrayList(T), start: usize, k: usize, 
     var remain = n - start + 1;
     var available = remain - need;
 
-    var i = start;
-    while (i <= start + available) : (i += 1) {
+    for (start..(start + available + 1)) |i| {
         try curr.append(str[i]);
         try enumerate(T, curr, i, k, n, str, res);
         _ = curr.swapRemove(curr.items.len - 1);
