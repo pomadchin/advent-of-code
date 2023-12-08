@@ -65,7 +65,7 @@ pub fn lcmSlice(comptime T: type, slice: []T) T {
     var res = slice[0];
 
     for (1..slice.len) |i| {
-        res = (((slice[i] * res)) / (gcd(T, slice[i], res)));
+        res = (slice[i] * res) / gcd(T, slice[i], res);
     }
 
     return res;
