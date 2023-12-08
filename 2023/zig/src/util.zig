@@ -55,25 +55,23 @@ pub const SplitStringIterator = std.mem.SplitIterator(u8, std.mem.DelimiterType.
 pub fn product(comptime T: type, k: usize, input: []const T, allocator: Allocator) !std.ArrayList(std.ArrayList(T)) {
     var res = std.ArrayList(std.ArrayList(T)).init(allocator);
     var curr = std.ArrayList(T).init(allocator);
-    var n: usize = input.len - 1;
 
-    try enumerate(T, &curr, 0, k, n, input, &res);
+    try enumerate(T, &curr, k, input, &res);
 
     return res;
 }
 
 // dfs / backtracking for the product
-fn enumerate(comptime T: type, curr: *std.ArrayList(T), start: usize, k: usize, n: usize, input: []const T, res: *std.ArrayList(std.ArrayList(T))) !void {
+fn enumerate(comptime T: type, curr: *std.ArrayList(T), k: usize, input: []const T, res: *std.ArrayList(std.ArrayList(T))) !void {
     if (curr.items.len == k) {
         var copy = try curr.clone();
         try res.append(copy);
         return;
     }
 
-    var remain = n + 1 - start;
-    for (start..(remain)) |i| {
-        try curr.append(input[i]);
-        try enumerate(T, curr, 0, k, n, input, res);
+    for (input) |i| {
+        try curr.append(i);
+        try enumerate(T, curr, k, input, res);
         _ = curr.swapRemove(curr.items.len - 1);
     }
 
