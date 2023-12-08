@@ -58,14 +58,14 @@ pub fn gcd(comptime T: type, a: T, b: T) T {
 }
 
 pub fn lcm(comptime T: type, a: T, b: T) T {
-    return (a / gcd(T, a, b)) * b;
+    return (a * b) / gcd(T, a, b);
 }
 
 pub fn lcmSlice(comptime T: type, slice: []T) T {
     var res = slice[0];
 
     for (1..slice.len) |i| {
-        res = (slice[i] * res) / gcd(T, slice[i], res);
+        res = lcm(T, slice[i], res);
     }
 
     return res;
