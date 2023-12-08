@@ -10,6 +10,7 @@ const Str = util.Str;
 
 const ORDER_PART1: Str = "AKQJT98765432";
 const ORDER_PART2: Str = "AKQT98765432J";
+const ORDER_PART_2: Str = "AKQT98765432";
 
 const Hand = struct { cards: Str, bid: i64 };
 
@@ -154,11 +155,9 @@ pub fn part2(input: Str) !i64 {
         var idx = jockerCounts[0];
         var jCount = jockerCounts[1];
 
-        var list = try util.product(u8, ORDER_PART2.len - 1, jCount, ORDER_PART2, allocator);
+        var list = try util.product(u8, jCount, ORDER_PART_2, allocator);
 
         for (list.items) |chars| {
-            // chars of length that mach count of J
-            // construct a new hand
             var handNew: [5]u8 = undefined;
             util.copyStr(&handNew, &cardsNoJocker);
 
