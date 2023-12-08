@@ -12,13 +12,10 @@ pub fn Queue(comptime Child: type) type {
         gpa: std.mem.Allocator,
         start: ?*Node,
         end: ?*Node,
+        size: usize,
 
         pub fn init(gpa: std.mem.Allocator) This {
-            return This{
-                .gpa = gpa,
-                .start = null,
-                .end = null,
-            };
+            return This{ .gpa = gpa, .start = null, .end = null, .size = 0 };
         }
         pub fn enqueue(this: *This, value: Child) !void {
             const node = try this.gpa.create(Node);
@@ -26,20 +23,27 @@ pub fn Queue(comptime Child: type) type {
             if (this.end) |end| end.next = node //
             else this.start = node;
             this.end = node;
+            this.size += 1;
         }
         pub fn dequeue(this: *This) ?Child {
             const start = this.start orelse return null;
             defer this.gpa.destroy(start);
-            if (start.next) |next|
-                this.start = next
-            else {
+            if (start.next) |next| {
+                this.start = next;
+                this.size -= 1;
+            } else {
                 this.start = null;
                 this.end = null;
+                this.size = 0;
             }
             return start.data;
         }
         pub fn isEmpty(this: This) bool {
             return this.start == null;
+        }
+
+        pub fn getSize(this: This) usize {
+            return this.size;
         }
     };
 }

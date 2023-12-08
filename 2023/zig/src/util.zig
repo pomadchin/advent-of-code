@@ -52,6 +52,25 @@ pub const isDigit = std.ascii.isDigit;
 
 pub const SplitStringIterator = std.mem.SplitIterator(u8, std.mem.DelimiterType.sequence);
 
+pub fn gcd(comptime T: type, a: T, b: T) T {
+    if (b == 0) return a;
+    return gcd(T, b, a % b);
+}
+
+pub fn lcm(comptime T: type, a: T, b: T) T {
+    return (a / gcd(T, a, b)) * b;
+}
+
+pub fn lcmSlice(comptime T: type, slice: []T) T {
+    var res = slice[0];
+
+    for (1..slice.len) |i| {
+        res = (((slice[i] * res)) / (gcd(T, slice[i], res)));
+    }
+
+    return res;
+}
+
 pub fn product(comptime T: type, k: usize, input: []const T, allocator: Allocator) !std.ArrayList(std.ArrayList(T)) {
     var res = std.ArrayList(std.ArrayList(T)).init(allocator);
     var curr = std.ArrayList(T).init(allocator);
