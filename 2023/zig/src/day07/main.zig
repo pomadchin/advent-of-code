@@ -201,7 +201,6 @@ test "input-part1" {
 }
 
 test "example-part2" {
-    // const actual = try part1(@embedFile("example2.txt"));
     const actual = try part2(@embedFile("example1.txt"));
     const expected = @as(i64, 5905);
 

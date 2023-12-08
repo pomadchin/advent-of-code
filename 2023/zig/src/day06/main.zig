@@ -1,6 +1,5 @@
 const std = @import("std");
 const util = @import("util");
-const bufIter = @import("buf-iter");
 const queue = @import("queue");
 
 const Str = util.Str;

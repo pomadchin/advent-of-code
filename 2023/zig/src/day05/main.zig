@@ -125,7 +125,7 @@ pub fn part2(input: Str) !i64 {
 
         var seeds_new = std.ArrayList(SRange).init(allocator);
 
-        while (!q.isEmpty()) {
+        while (q.nonEmpty()) {
             var r: SRange = q.dequeue().?;
             var found = false;
             for (ranges.items) |range| {

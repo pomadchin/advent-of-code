@@ -41,6 +41,9 @@ pub fn Queue(comptime Child: type) type {
         pub fn isEmpty(this: This) bool {
             return this.start == null;
         }
+        pub fn nonEmpty(this: This) bool {
+            return !isEmpty(this);
+        }
 
         pub fn getSize(this: This) usize {
             return this.size;
