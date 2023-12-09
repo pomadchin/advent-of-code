@@ -1,40 +1,94 @@
 const std = @import("std");
 const util = @import("util");
 
-pub fn solve(input: []const u8) ![3]u32 {
-    var lines = std.mem.split(u8, input, "\n");
-    _ = lines;
+const Str = util.Str;
+const Allocator = std.mem.Allocator;
 
-    var max: [3]u32 = .{ 0, 0, 0 };
+pub fn seq(ints: std.ArrayList(i64), allocator: Allocator) !i64 {
+    if (util.forAll(i64, ints.items, 0)) return 0;
 
-    return max;
+    var diffs = std.ArrayList(i64).init(allocator);
+    var i: usize = 0;
+    while (i + 1 < ints.items.len) : (i += 1) {
+        try diffs.append(ints.items[i + 1] - ints.items[i]);
+    }
+
+    return ints.getLast() + try seq(diffs, allocator);
 }
 
-pub fn main() !void {
-    // Prints to stderr (it's a shortcut based on `std.io.getStdErr()`)
-    std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
+pub fn part1(input: Str) !i64 {
+    var arena = util.arena_gpa;
+    defer arena.deinit();
+    var allocator = arena.allocator();
 
-    // stdout is for the actual output of your application, for example if you
-    // are implementing gzip, then only the compressed bytes should be sent to
-    // stdout, not any debugging messages.
-    const stdout_file = std.io.getStdOut().writer();
-    var bw = std.io.bufferedWriter(stdout_file);
-    const stdout = bw.writer();
+    var res: i64 = 0;
 
-    try stdout.print("Run `zig build test` to run the tests.\n", .{});
+    var lines = util.splitStr(input, "\n");
+    while (lines.next()) |line| {
+        var intBuf: [50]i64 = undefined;
+        var ints = try util.extractIntsIntoBuf(i64, line, &intBuf);
 
-    try bw.flush(); // don't forget to flush!
+        var intsList = std.ArrayList(i64).init(allocator);
+        defer intsList.deinit();
+        try intsList.appendSlice(ints);
 
-    // const max = try solve(@embedFile("input.txt"));
-    // const total = @reduce(.Add, @as(@Vector(3, u32), max));
-    // std.debug.print("Part 1: {d}\n", .{max[0]});
-    // std.debug.print("Part 2: {any} = {d}\n", .{ max, total });
+        res += try seq(intsList, allocator);
+    }
+
+    return res;
 }
 
-test "test-input" {
-    // const max = try solve(@embedFile("test.txt"));
-    const max = try solve(&[_]u8{ 'a', 'b', 'c' });
-    const total = @reduce(.Add, @as(@Vector(3, u32), max));
-    try std.testing.expectEqual(max[0], 0);
-    try std.testing.expectEqual(total, 0);
+pub fn part2(input: Str) !i64 {
+    var arena = util.arena_gpa;
+    defer arena.deinit();
+    var allocator = arena.allocator();
+
+    var res: i64 = 0;
+
+    var lines = util.splitStr(input, "\n");
+    while (lines.next()) |line| {
+        var intBuf: [50]i64 = undefined;
+        var ints = try util.extractIntsIntoBuf(i64, line, &intBuf);
+
+        var intBufR: [50]i64 = undefined;
+        var intsR = util.reverse(i64, &intBufR, ints);
+
+        var intsList = std.ArrayList(i64).init(allocator);
+        defer intsList.deinit();
+        try intsList.appendSlice(intsR);
+
+        res += try seq(intsList, allocator);
+    }
+
+    return res;
+}
+
+pub fn main() !void {}
+
+test "example-part1" {
+    const actual = try part1(@embedFile("example1.txt"));
+    const expected = @as(i64, 114);
+
+    try util.expectEqual(expected, actual);
+}
+
+test "input-part1" {
+    const actual = try part1(@embedFile("input1.txt"));
+    const expected = @as(i64, 1581679977);
+
+    try util.expectEqual(expected, actual);
+}
+
+test "example-part2" {
+    const actual = try part2(@embedFile("example1.txt"));
+    const expected = @as(i64, 2);
+
+    try util.expectEqual(expected, actual);
+}
+
+test "input-part2" {
+    const actual = try part2(@embedFile("input1.txt"));
+    const expected = @as(i64, 889);
+
+    try util.expectEqual(expected, actual);
 }

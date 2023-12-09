@@ -52,6 +52,17 @@ pub const isDigit = std.ascii.isDigit;
 
 pub const SplitStringIterator = std.mem.SplitIterator(u8, std.mem.DelimiterType.sequence);
 
+pub fn reverse(comptime T: type, buffer: []T, s: []const T) []T {
+    for (s, 0..) |c, i| buffer[buffer.len - 1 - i] = c;
+    return buffer[(buffer.len - s.len)..buffer.len];
+}
+
+pub fn forAll(comptime T: type, slice: []T, v: T) bool {
+    var res = true;
+    for (slice) |e| res = res and (e == v);
+    return res;
+}
+
 pub fn gcd(comptime T: type, a: T, b: T) T {
     if (b == 0) return a;
     return gcd(T, b, a % b);
@@ -164,18 +175,22 @@ pub fn readInts(comptime IntType: type, line: []const u8, nums: *std.ArrayList(I
     }
 }
 
+fn isDigitExtract(c: u8) bool {
+    return c == '-' or (c >= '0' and c <= '9');
+}
+
 pub fn extractIntsIntoBuf(comptime IntType: type, str: []const u8, buf: []IntType) ![]IntType {
     var i: usize = 0;
     var n: usize = 0;
 
     while (i < str.len) {
         const c = str[i];
-        if (isDigit(c)) {
+        if (isDigitExtract(c)) {
             const start = i;
             i += 1;
             while (i < str.len) {
                 const c2 = str[i];
-                if (!isDigit(c2)) {
+                if (!isDigitExtract(c2)) {
                     break;
                 }
                 i += 1;
