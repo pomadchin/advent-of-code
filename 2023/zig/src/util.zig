@@ -52,6 +52,18 @@ pub const isDigit = std.ascii.isDigit;
 
 pub const SplitStringIterator = std.mem.SplitIterator(u8, std.mem.DelimiterType.sequence);
 
+pub fn sameElementsAs(comptime T: type, l: []T, r: []T, allocator: Allocator) !bool {
+    if (l.len != r.len) return false;
+
+    var set = std.AutoHashMap(T, void).init(allocator);
+    defer set.deinit();
+
+    for (l) |e| try set.put(e, {});
+    for (r) |e| if (!set.contains(e)) return false;
+
+    return true;
+}
+
 pub fn reverse(comptime T: type, buffer: []T, s: []const T) []T {
     for (s, 0..) |c, i| buffer[buffer.len - 1 - i] = c;
     return buffer[(buffer.len - s.len)..buffer.len];
