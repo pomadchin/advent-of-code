@@ -190,7 +190,10 @@ fn count_crossings(tiles: *std.AutoHashMap(Pos, u8), visited: *std.AutoHashMap(P
         var pos = .{ r, c };
         if (!visited.contains(pos)) continue;
         if (tiles.get(pos)) |tile| {
-            if (tile == 'J' or tile == 'L' or tile == '|') res += 1;
+            switch (tile) {
+                'J', 'L', '|' => res += 1,
+                else => {},
+            }
         }
     }
 
