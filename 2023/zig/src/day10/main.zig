@@ -9,6 +9,8 @@ const Direction = util.Tuple(&.{ i32, i32 });
 const Pos = util.Tuple(&.{ usize, usize });
 const PosD = struct { pos: Pos, dist: usize };
 
+const TilesBuild = struct { s: Pos, rows: usize, cols: usize };
+
 fn directionOutside(d: Direction, rows: usize, cols: usize) bool {
     return d[0] < 0 or d[0] >= rows or d[1] < 0 or d[1] >= cols;
 }
@@ -75,15 +77,10 @@ pub fn adjInit(allocator: Allocator) !std.AutoHashMap(u8, std.ArrayList(Directio
     return map;
 }
 
-pub fn part1(input: Str) !usize {
-    var arena = util.arena_gpa;
-    defer arena.deinit();
-    var allocator = arena.allocator();
-
+// fills in the tiles map ((row, col) -> c) valies
+// returns (s position, rows, cols)
+fn buildTiles(input: Str, tiles: *std.AutoHashMap(Pos, u8), allocator: Allocator) !TilesBuild {
     var adj = try adjInit(allocator);
-
-    var tiles = std.AutoHashMap(Pos, u8).init(allocator);
-    defer tiles.deinit();
 
     var rows: usize = 0;
     var cols: usize = 0;
@@ -145,6 +142,24 @@ pub fn part1(input: Str) !usize {
         }
     }
 
+    return TilesBuild{ .s = s, .rows = rows, .cols = cols };
+}
+
+pub fn part1(input: Str) !usize {
+    var arena = util.arena_gpa;
+    defer arena.deinit();
+    var allocator = arena.allocator();
+
+    var adj = try adjInit(allocator);
+
+    var tiles = std.AutoHashMap(Pos, u8).init(allocator);
+    defer tiles.deinit();
+
+    var build = try buildTiles(input, &tiles, allocator);
+    var s = build.s;
+    var rows = build.rows;
+    var cols = build.cols;
+
     // std.debug.print("S: {any}, {c}\n", .{ s, tiles.get(s).? });
 
     var q = queue.Queue(PosD).init(allocator);
@@ -161,16 +176,18 @@ pub fn part1(input: Str) !usize {
         // std.debug.print("\np: {any}, d: {d}, items: {any}\n", .{ p, d, adj.get(tiles.get(p).?).?.items });
         try dists.put(p, d);
 
-        for (adj.get(tiles.get(p).?).?.items) |dp| {
-            var nextD = sumPD(p, dp);
+        var tile = tiles.get(p).?;
 
-            if (directionOutside(nextD, rows, cols)) continue;
+        if (adj.get(tile)) |directionList| {
+            for (directionList.items) |dp| {
+                var nextD = sumPD(p, dp);
+                if (directionOutside(nextD, rows, cols)) continue;
 
-            var nextP = directionToPos(nextD);
+                var nextP = directionToPos(nextD);
+                if (!tiles.contains(nextP)) continue;
 
-            if (!tiles.contains(nextP)) continue;
-
-            try q.enqueue(PosD{ .pos = nextP, .dist = d + 1 });
+                try q.enqueue(PosD{ .pos = nextP, .dist = d + 1 });
+            }
         }
     }
 
@@ -183,7 +200,7 @@ pub fn part1(input: Str) !usize {
 
 // everything for row [i] up until col (j)
 // send rays out of everything unvisited to count number of crossings
-fn count_crossings(tiles: *std.AutoHashMap(Pos, u8), visited: *std.AutoHashMap(Pos, void), r: usize, cols: usize) usize {
+fn countCrossings(tiles: *std.AutoHashMap(Pos, u8), visited: *std.AutoHashMap(Pos, void), r: usize, cols: usize) usize {
     var res: usize = 0;
     for (0..cols) |c| {
         // skip not visited
@@ -211,63 +228,10 @@ pub fn part2(input: Str) !usize {
     var tiles = std.AutoHashMap(Pos, u8).init(allocator);
     defer tiles.deinit();
 
-    var rows: usize = 0;
-    var cols: usize = 0;
-
-    var lines = util.splitStr(input, "\n");
-    while (lines.next()) |line| {
-        cols = @max(cols, line.len);
-        for (0..cols) |c| try tiles.put(.{ rows, c }, line[c]);
-        rows += 1;
-    }
-
-    var s: Pos = .{ 0, 0 };
-    outer: for (0..rows) |r| {
-        for (0..cols) |c| {
-            var idx = .{ r, c };
-            if (tiles.get(idx)) |value| {
-                if (value == 'S') {
-                    s = idx;
-                    break :outer;
-                }
-            }
-        }
-    }
-
-    // possible surroundings of S
-    var sAdj = allocArrayDirection(allocator);
-    defer sAdj.deinit();
-
-    // adjacent to S items
-    var all = allocArrayDirection(allocator);
-    defer all.deinit();
-    try all.appendSlice(adj.get('|').?.items);
-    try all.appendSlice(adj.get('-').?.items);
-
-    // construt S adjacent items
-    for (all.items) |dp| {
-        var nextD = sumPD(s, dp);
-        if (isNegative(nextD)) continue;
-        var nextP = directionToPos(nextD);
-
-        if (!tiles.contains(nextP)) continue;
-
-        for (adj.get(tiles.get(nextP).?).?.items) |dpa| {
-            if (eqlDirection(neg(dp), dpa)) try sAdj.append(dp);
-        }
-    }
-
-    // replace S with a corresponding pipe
-    var it = adj.iterator();
-    while (it.next()) |next| {
-        var key = next.key_ptr.*;
-        var value = next.value_ptr.*;
-
-        if (try util.sameElementsAs(Direction, value.items, sAdj.items, allocator)) {
-            try tiles.put(s, key);
-            break;
-        }
-    }
+    var build = try buildTiles(input, &tiles, allocator);
+    var s = build.s;
+    var rows = build.rows;
+    var cols = build.cols;
 
     var q = queue.Queue(Pos).init(allocator);
     try q.enqueue(s);
@@ -281,16 +245,17 @@ pub fn part2(input: Str) !usize {
         if (!tiles.contains(p) or visited.contains(p)) continue;
         try visited.put(p, {});
 
-        for (adj.get(tiles.get(p).?).?.items) |dp| {
-            var nextD = sumPD(p, dp);
+        var tile = tiles.get(p).?;
+        if (adj.get(tile)) |directionList| {
+            for (directionList.items) |dp| {
+                var nextD = sumPD(p, dp);
+                if (directionOutside(nextD, rows, cols)) continue;
 
-            if (directionOutside(nextD, rows, cols)) continue;
+                var nextP = directionToPos(nextD);
+                if (!tiles.contains(nextP)) continue;
 
-            var nextP = directionToPos(nextD);
-
-            if (!tiles.contains(nextP)) continue;
-
-            try q.enqueue(nextP);
+                try q.enqueue(nextP);
+            }
         }
     }
 
@@ -301,7 +266,7 @@ pub fn part2(input: Str) !usize {
             // use only unvisited points
             if (visited.contains(pos)) continue;
             // shoot rays to count crossings
-            var x = count_crossings(&tiles, &visited, r, c);
+            var x = countCrossings(&tiles, &visited, r, c);
             if (x > 0) {
                 // enclosed if even
                 if (x % 2 == 1) res += 1;
