@@ -50,7 +50,86 @@ pub const desc = std.sort.desc;
 
 pub const isDigit = std.ascii.isDigit;
 
+pub const abs = std.math.absCast;
+
 pub const SplitStringIterator = std.mem.SplitIterator(u8, std.mem.DelimiterType.sequence);
+
+pub fn listRangeIntersectionCount(comptime T: type, l: *std.ArrayList(T), from: T, until: T) usize {
+    var res: usize = 0;
+
+    for (l.items) |item| {
+        if (item >= from and item < until) res += 1;
+    }
+
+    return res;
+}
+
+pub fn listSetIntersectionCount(comptime T: type, l: *std.ArrayList(T), r: *std.AutoHashMap(T, void)) usize {
+    var res: usize = 0;
+
+    for (l.items) |item| {
+        if (r.contains(item)) res += 1;
+    }
+
+    return res;
+}
+
+pub fn listSetIntersection(comptime T: type, l: *std.ArrayList(T), r: *std.AutoHashMap(T, void), allocator: Allocator) !std.ArrayList(T) {
+    var list = std.ArrayList(usize).init(allocator);
+
+    for (l.items) |item| {
+        if (r.contains(item)) try list.append(item);
+    }
+
+    return list;
+}
+
+pub fn listIntersection(comptime T: type, l: *std.ArrayList(T), r: *std.ArrayList(T), allocator: Allocator) !std.ArrayList(T) {
+    var ls = try listToSet(T, l, allocator);
+    var rs = try listToSet(T, r, allocator);
+
+    var set = try setIntersection(T, &ls, &rs, allocator);
+    var list = try setToList(T, &set, allocator);
+
+    return list;
+}
+
+pub fn setIntersection(comptime T: type, ls: *std.AutoHashMap(T, void), rs: *std.AutoHashMap(T, void), allocator: Allocator) !std.AutoHashMap(T, void) {
+    var set = std.AutoHashMap(T, void).init(allocator);
+
+    var it = ls.keyIterator();
+    while (it.next()) |key| {
+        var k = key.*;
+        if (rs.contains(k)) try set.put(k, {});
+    }
+
+    return set;
+}
+
+pub fn rangeSet(from: usize, until: usize, allocator: Allocator) !std.AutoHashMap(usize, void) {
+    var set = std.AutoHashMap(usize, void).init(allocator);
+    for (from..until) |idx| try set.put(idx, {});
+    return set;
+}
+
+pub fn rangeList(from: usize, until: usize, allocator: Allocator) !std.ArrayList(usize) {
+    var list = std.ArrayList(usize).init(allocator);
+    for (from..until) |idx| try list.append(idx);
+    return list;
+}
+
+pub fn setToList(comptime T: type, set: *std.AutoHashMap(T, void), allocator: Allocator) !std.ArrayList(T) {
+    var list = std.ArrayList(T).init(allocator);
+    var it = set.keyIterator();
+    while (it.next()) |key| try list.append(key.*);
+    return list;
+}
+
+pub fn listToSet(comptime T: type, list: *std.ArrayList(T), allocator: Allocator) !std.AutoHashMap(T, void) {
+    var set = std.AutoHashMap(T, void).init(allocator);
+    for (list.items) |item| try set.put(item, {});
+    return set;
+}
 
 pub fn sameElementsAs(comptime T: type, l: []T, r: []T, allocator: Allocator) !bool {
     if (l.len != r.len) return false;
@@ -98,13 +177,12 @@ pub fn product(comptime T: type, k: usize, input: []const T, allocator: Allocato
     var res = std.ArrayList(std.ArrayList(T)).init(allocator);
     var curr = std.ArrayList(T).init(allocator);
 
-    try enumerate(T, &curr, k, input, &res);
+    try enumerateProduct(T, &curr, k, input, &res);
 
     return res;
 }
 
-// dfs / backtracking for the product
-fn enumerate(comptime T: type, curr: *std.ArrayList(T), k: usize, input: []const T, res: *std.ArrayList(std.ArrayList(T))) !void {
+fn enumerateProduct(comptime T: type, curr: *std.ArrayList(T), k: usize, input: []const T, res: *std.ArrayList(std.ArrayList(T))) !void {
     if (curr.items.len == k) {
         var copy = try curr.clone();
         try res.append(copy);
@@ -113,7 +191,38 @@ fn enumerate(comptime T: type, curr: *std.ArrayList(T), k: usize, input: []const
 
     for (input) |i| {
         try curr.append(i);
-        try enumerate(T, curr, k, input, res);
+        try enumerateProduct(T, curr, k, input, res);
+        _ = curr.swapRemove(curr.items.len - 1);
+    }
+
+    return;
+}
+
+pub fn combinations(comptime T: type, k: usize, input: []const T, allocator: Allocator) !std.ArrayList(std.ArrayList(T)) {
+    var res = std.ArrayList(std.ArrayList(T)).init(allocator);
+    var curr = std.ArrayList(T).init(allocator);
+
+    var n: usize = input.len - 1;
+
+    try enumerateCombinations(T, &curr, 0, k, n, input, &res);
+
+    return res;
+}
+
+fn enumerateCombinations(comptime T: type, curr: *std.ArrayList(T), start: usize, k: usize, n: usize, input: []const T, res: *std.ArrayList(std.ArrayList(T))) !void {
+    if (curr.items.len == k) {
+        var copy = try curr.clone();
+        try res.append(copy);
+        return;
+    }
+
+    var need = k - curr.items.len;
+    var remain = n - start + 1;
+    var available = remain - need;
+
+    for (start..(start + available + 1)) |i| {
+        try curr.append(input[i]);
+        try enumerateCombinations(T, curr, i + 1, k, n, input, res);
         _ = curr.swapRemove(curr.items.len - 1);
     }
 
