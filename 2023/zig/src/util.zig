@@ -54,6 +54,12 @@ pub const abs = std.math.absCast;
 
 pub const SplitStringIterator = std.mem.SplitIterator(u8, std.mem.DelimiterType.sequence);
 
+pub fn sumSlice(comptime T: type, slice: []T) T {
+    var res: T = 0;
+    for (slice) |e| res += e;
+    return res;
+}
+
 pub fn listRangeIntersectionCount(comptime T: type, l: *std.ArrayList(T), from: T, until: T) usize {
     var res: usize = 0;
 
@@ -123,6 +129,12 @@ pub fn setToList(comptime T: type, set: *std.AutoHashMap(T, void), allocator: Al
     var it = set.keyIterator();
     while (it.next()) |key| try list.append(key.*);
     return list;
+}
+
+pub fn listToSet2(comptime T: type, list: std.ArrayList(T), allocator: Allocator) !std.AutoHashMap(T, void) {
+    var set = std.AutoHashMap(T, void).init(allocator);
+    for (list.items) |item| try set.put(item, {});
+    return set;
 }
 
 pub fn listToSet(comptime T: type, list: *std.ArrayList(T), allocator: Allocator) !std.AutoHashMap(T, void) {
