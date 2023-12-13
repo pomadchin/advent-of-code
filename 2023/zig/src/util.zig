@@ -54,6 +54,22 @@ pub const abs = std.math.absCast;
 
 pub const SplitStringIterator = std.mem.SplitIterator(u8, std.mem.DelimiterType.sequence);
 
+pub fn getColumn(comptime T: type, idx: usize, list: std.ArrayList([]const T), allocator: Allocator) ![]T {
+    var column = try allocator.alloc(T, list.items.len);
+    for (list.items, 0..) |item, i| column[i] = item[idx];
+    return column;
+}
+
+pub fn sliceDiffCount(comptime T: type, l: []const T, r: []const T) usize {
+    var res: usize = 0;
+
+    for (0..@min(l.len, r.len)) |i| {
+        if (l[i] != r[i]) res += 1;
+    }
+
+    return res;
+}
+
 pub fn sumSlice(comptime T: type, slice: []T) T {
     var res: T = 0;
     for (slice) |e| res += e;
