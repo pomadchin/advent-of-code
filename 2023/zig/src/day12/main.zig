@@ -42,7 +42,7 @@ pub fn part1(input: Str) !usize {
 
         var combinations = try util.combinations(usize, k, questions, allocator);
         for (combinations.items) |combList| {
-            var comb = try util.listToSet2(usize, combList, allocator);
+            var comb = try util.listToSetConst(usize, combList, allocator);
             defer comb.deinit();
 
             var s = try allocator.alloc(u8, chars.len);
@@ -71,6 +71,10 @@ pub fn part1(input: Str) !usize {
     return res;
 }
 
+pub fn part1dp(input: Str) !usize {
+    return try solve(input, 1);
+}
+
 fn getSafe(slice: []const u8, i: usize) ?u8 {
     if (i < slice.len) return slice[i];
     return null;
@@ -95,7 +99,7 @@ fn dp(chars: []const u8, nums: []usize, ic: usize, in: usize, curr: ?usize, memo
 
     var c = getSafe(chars, ic);
 
-    // no current
+    // no chars
     if (c == null) {
         if (curr == null or curr == 0) {
             // gracefully reached the end
@@ -153,7 +157,7 @@ fn dp(chars: []const u8, nums: []usize, ic: usize, in: usize, curr: ?usize, memo
     return 0;
 }
 
-pub fn part1dp(input: Str) !usize {
+pub fn solve(input: Str, replication: usize) !usize {
     var arena = util.arena_gpa;
     defer arena.deinit();
     var allocator = arena.allocator();
@@ -168,61 +172,32 @@ pub fn part1dp(input: Str) !usize {
         var numsBuf: [20]usize = undefined;
         var nums = try util.extractIntsIntoBuf(usize, numsSlice, &numsBuf);
 
+        var charsr = try allocator.alloc(u8, chars.len * replication + replication - 1);
+        defer allocator.free(charsr);
+        for (0..replication) |start| {
+            for (chars, start..) |c, i| charsr[start * chars.len + i] = c;
+            // don't add the last ?, we're adding replication - 1 question marks
+            if (start * chars.len + start + chars.len >= charsr.len) continue;
+            charsr[start * chars.len + start + chars.len] = '?';
+        }
+
+        var numsr = try allocator.alloc(usize, nums.len * replication);
+        defer allocator.free(numsr);
+        for (0..replication) |start| {
+            for (nums, 0..) |n, i| numsr[start * nums.len + i] = n;
+        }
+
         var memo = std.AutoHashMap(MKey, usize).init(allocator);
         defer memo.deinit();
 
-        res += try dp(chars, nums, 0, 0, null, &memo);
+        res += try dp(charsr, numsr, 0, 0, null, &memo);
     }
 
     return res;
 }
 
 pub fn part2(input: Str) !usize {
-    var arena = util.arena_gpa;
-    defer arena.deinit();
-    var allocator = arena.allocator();
-
-    var res: usize = 0;
-    var lines = util.splitStr(input, "\n");
-    while (lines.next()) |line| {
-        var ls = util.splitStr(line, " ");
-        var chars = ls.next().?;
-        var numsSlice = ls.next().?;
-
-        var numsBuf: [20]usize = undefined;
-        var nums = try util.extractIntsIntoBuf(usize, numsSlice, &numsBuf);
-
-        var charsx5 = try allocator.alloc(u8, chars.len * 5 + 4);
-        defer allocator.free(charsx5);
-        for (0..5) |t| {
-            var start: usize = t;
-
-            for (chars, start..) |c, i| {
-                charsx5[t * chars.len + i] = c;
-            }
-
-            if (t * chars.len + start + chars.len < charsx5.len) {
-                charsx5[t * chars.len + start + chars.len] = '?';
-            } else {
-                continue;
-            }
-        }
-
-        var numsx5 = try allocator.alloc(usize, nums.len * 5);
-        defer allocator.free(numsx5);
-        for (0..5) |t| {
-            for (nums, 0..) |n, i| {
-                numsx5[t * nums.len + i] = n;
-            }
-        }
-
-        var memo = std.AutoHashMap(MKey, usize).init(allocator);
-        defer memo.deinit();
-
-        res += try dp(charsx5, numsx5, 0, 0, null, &memo);
-    }
-
-    return res;
+    return try solve(input, 5);
 }
 
 pub fn main() !void {}
@@ -236,6 +211,20 @@ test "example-part1" {
 
 test "input-part1" {
     const actual = try part1(@embedFile("input1.txt"));
+    const expected = @as(usize, 7922);
+
+    try util.expectEqual(expected, actual);
+}
+
+test "example-part1-dp" {
+    const actual = try part1dp(@embedFile("example1.txt"));
+    const expected = @as(usize, 21);
+
+    try util.expectEqual(expected, actual);
+}
+
+test "input-part1-dp" {
+    const actual = try part1dp(@embedFile("input1.txt"));
     const expected = @as(usize, 7922);
 
     try util.expectEqual(expected, actual);

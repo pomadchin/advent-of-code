@@ -131,7 +131,7 @@ pub fn setToList(comptime T: type, set: *std.AutoHashMap(T, void), allocator: Al
     return list;
 }
 
-pub fn listToSet2(comptime T: type, list: std.ArrayList(T), allocator: Allocator) !std.AutoHashMap(T, void) {
+pub fn listToSetConst(comptime T: type, list: std.ArrayList(T), allocator: Allocator) !std.AutoHashMap(T, void) {
     var set = std.AutoHashMap(T, void).init(allocator);
     for (list.items) |item| try set.put(item, {});
     return set;
