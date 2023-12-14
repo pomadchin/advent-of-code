@@ -54,6 +54,54 @@ pub const abs = std.math.absCast;
 
 pub const SplitStringIterator = std.mem.SplitIterator(u8, std.mem.DelimiterType.sequence);
 
+pub fn reverseCols(comptime T: type, list: std.ArrayList([]const T), allocator: Allocator) !std.ArrayList([]const T) {
+    var res = std.ArrayList([]const T).init(allocator);
+    for (list.items) |row| {
+        var rowr = try allocator.alloc(T, row.len);
+        try res.append(reverse(T, rowr, row));
+    }
+    return res;
+}
+
+pub fn arrayListToStr(list: std.ArrayList(Str), allocator: Allocator) !Str {
+    var res = try allocator.alloc(u8, list.items.len * list.items[0].len + list.items.len);
+    var idx: usize = 0;
+    for (list.items) |row| {
+        for (row) |c| {
+            res[idx] = c;
+            idx += 1;
+        }
+
+        res[idx] = '\n';
+        idx += 1;
+    }
+    return res;
+}
+
+pub fn transposeConst(comptime T: type, grid: std.ArrayList([]const T), allocator: Allocator) !std.ArrayList([]const T) {
+    var cols = grid.items[0].len;
+    var gridT = std.ArrayList(Str).init(allocator);
+
+    for (0..cols) |col| {
+        var column = try getColumn(T, col, grid, allocator);
+        try gridT.append(column);
+    }
+
+    return gridT;
+}
+
+pub fn transpose(comptime T: type, grid: std.ArrayList([]T), allocator: Allocator) !std.ArrayList([]T) {
+    var cols = grid.items[0].len;
+    var gridT = std.ArrayList(Str).init(allocator);
+
+    for (0..cols) |col| {
+        var column = try getColumn(T, col, grid, allocator);
+        try gridT.append(column);
+    }
+
+    return gridT;
+}
+
 pub fn getColumn(comptime T: type, idx: usize, list: std.ArrayList([]const T), allocator: Allocator) ![]T {
     var column = try allocator.alloc(T, list.items.len);
     for (list.items, 0..) |item, i| column[i] = item[idx];
@@ -169,6 +217,15 @@ pub fn sameElementsAs(comptime T: type, l: []T, r: []T, allocator: Allocator) !b
     for (r) |e| if (!set.contains(e)) return false;
 
     return true;
+}
+
+pub fn reverseList(comptime T: type, list: std.ArrayList(T), allocator: Allocator) !std.ArrayList(T) {
+    var res = std.ArrayList(T).init(allocator);
+
+    var i = list.items.len;
+    while (i > 0) : (i -= 1) try res.append(list.items[i - 1]);
+
+    return res;
 }
 
 pub fn reverse(comptime T: type, buffer: []T, s: []const T) []T {
