@@ -86,7 +86,7 @@ fn checkColsDiff(grid: std.ArrayList(Str), colL: usize, colR: usize, allocator: 
     return diff == 1;
 }
 
-fn buldGridList(input: Str, allocator: Allocator) !std.ArrayList(std.ArrayList(Str)) {
+fn buildGridList(input: Str, allocator: Allocator) !std.ArrayList(std.ArrayList(Str)) {
     var lines = util.splitStr(input, "\n");
 
     var grids = std.ArrayList(std.ArrayList(Str)).init(allocator);
@@ -117,7 +117,7 @@ pub fn part1(input: Str) !usize {
     defer arena.deinit();
     var allocator = arena.allocator();
 
-    var grids = try buldGridList(input, allocator);
+    var grids = try buildGridList(input, allocator);
     defer grids.clearAndFree();
 
     var res: usize = 0;
@@ -151,7 +151,7 @@ pub fn part2(input: Str) !usize {
     defer arena.deinit();
     var allocator = arena.allocator();
 
-    var grids = try buldGridList(input, allocator);
+    var grids = try buildGridList(input, allocator);
     defer grids.clearAndFree();
 
     var res: usize = 0;
