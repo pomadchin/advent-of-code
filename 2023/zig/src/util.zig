@@ -54,6 +54,11 @@ pub const abs = std.math.absCast;
 
 pub const SplitStringIterator = std.mem.SplitIterator(u8, std.mem.DelimiterType.sequence);
 
+pub fn sliceContains(comptime T: type, slice: []const T, value: T) bool {
+    for (slice) |e| if (e == value) return true;
+    return false;
+}
+
 pub fn reverseCols(comptime T: type, list: std.ArrayList([]const T), allocator: Allocator) !std.ArrayList([]const T) {
     var res = std.ArrayList([]const T).init(allocator);
     for (list.items) |row| {
@@ -316,6 +321,13 @@ fn enumerateCombinations(comptime T: type, curr: *std.ArrayList(T), start: usize
 
 pub fn copyStr(dest: []u8, source: []const u8) void {
     std.mem.copy(u8, dest, source);
+}
+
+pub fn concatSlices(comptime T: type, s1: []const T, s2: []const T, allocator: Allocator) ![]T {
+    var res = try allocator.alloc(T, s1.len + s2.len);
+    for (s1, 0..) |e, i| res[i] = e;
+    for (s2, 0..) |e, i| res[i] = e;
+    return res;
 }
 
 pub fn concatStr(start: usize, input: Str, output: []u8) void {

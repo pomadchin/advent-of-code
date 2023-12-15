@@ -1,40 +1,106 @@
 const std = @import("std");
 const util = @import("util");
 
-pub fn solve(input: []const u8) ![3]u32 {
-    var lines = std.mem.split(u8, input, "\n");
-    _ = lines;
+const Str = util.Str;
+const Allocator = std.mem.Allocator;
 
-    var max: [3]u32 = .{ 0, 0, 0 };
-
-    return max;
+fn hash(str: Str) usize {
+    var res: usize = 0;
+    for (str) |c| {
+        res += @as(usize, @intCast(c));
+        res *= 17;
+        res %= 256;
+    }
+    return res;
 }
 
-pub fn main() !void {
-    // Prints to stderr (it's a shortcut based on `std.io.getStdErr()`)
-    std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
+pub fn part1(input: Str) !usize {
+    var lines = util.splitStr(input, ",");
 
-    // stdout is for the actual output of your application, for example if you
-    // are implementing gzip, then only the compressed bytes should be sent to
-    // stdout, not any debugging messages.
-    const stdout_file = std.io.getStdOut().writer();
-    var bw = std.io.bufferedWriter(stdout_file);
-    const stdout = bw.writer();
+    var res: usize = 0;
+    while (lines.next()) |line| res += hash(line);
 
-    try stdout.print("Run `zig build test` to run the tests.\n", .{});
-
-    try bw.flush(); // don't forget to flush!
-
-    // const max = try solve(@embedFile("input.txt"));
-    // const total = @reduce(.Add, @as(@Vector(3, u32), max));
-    // std.debug.print("Part 1: {d}\n", .{max[0]});
-    // std.debug.print("Part 2: {any} = {d}\n", .{ max, total });
+    return res;
 }
 
-test "test-input" {
-    // const max = try solve(@embedFile("test.txt"));
-    const max = try solve(&[_]u8{ 'a', 'b', 'c' });
-    const total = @reduce(.Add, @as(@Vector(3, u32), max));
-    try std.testing.expectEqual(max[0], 0);
-    try std.testing.expectEqual(total, 0);
+pub fn part2(input: Str) !usize {
+    var arena = util.arena_gpa;
+    defer arena.deinit();
+    var allocator = arena.allocator();
+
+    var map = std.AutoHashMap(usize, std.StringArrayHashMap(usize)).init(allocator);
+    defer map.deinit();
+
+    var lines = util.splitStr(input, ",");
+    while (lines.next()) |line| {
+        if (util.sliceContains(u8, line, '=')) {
+            var split = util.splitStr(line, "=");
+
+            var label = split.next().?;
+            var labelKey = hash(label);
+
+            var s = split.next().?;
+
+            var intBuf: [1]usize = undefined;
+            var value = (try util.extractIntsIntoBuf(usize, s, &intBuf))[0];
+
+            var box: std.StringArrayHashMap(usize) = undefined;
+            if (map.contains(labelKey)) box = map.get(labelKey).? else box = std.StringArrayHashMap(usize).init(allocator);
+            try box.put(label, value);
+
+            try map.put(labelKey, box);
+        } else if (util.sliceContains(u8, line, '-')) {
+            var split = util.splitStr(line, "-");
+
+            var label = split.next().?;
+            var labelKey = hash(label);
+
+            if (map.contains(labelKey)) {
+                var box: std.StringArrayHashMap(usize) = map.get(labelKey).?;
+                _ = box.orderedRemove(label);
+                try map.put(labelKey, box);
+            }
+        }
+    }
+
+    var res: usize = 0;
+    var it = map.iterator();
+    while (it.next()) |entry| {
+        var i = entry.key_ptr.*;
+        var box = entry.value_ptr.*;
+
+        for (box.values(), 0..) |val, j| res += (1 + i) * (1 + j) * val;
+    }
+
+    return res;
+}
+
+pub fn main() !void {}
+
+test "example-part1" {
+    const actual = try part1(@embedFile("example1.txt"));
+    const expected = @as(usize, 1320);
+
+    try util.expectEqual(expected, actual);
+}
+
+test "input-part1" {
+    const actual = try part1(@embedFile("input1.txt"));
+    const expected = @as(usize, 507291);
+
+    try util.expectEqual(expected, actual);
+}
+
+test "example-part2" {
+    const actual = try part2(@embedFile("example1.txt"));
+    const expected = @as(usize, 145);
+
+    try util.expectEqual(expected, actual);
+}
+
+test "input-part2" {
+    const actual = try part2(@embedFile("input1.txt"));
+    const expected = @as(usize, 296921);
+
+    try util.expectEqual(expected, actual);
 }
