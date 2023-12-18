@@ -11,6 +11,16 @@ const Edge = struct {
     from: Node,
     toL: Node,
     toR: Node,
+
+    fn parse(line: Str) Edge {
+        var split = util.splitStr(line, " = ");
+        const from = split.next().?[0..3];
+
+        var to = util.splitStr(split.next().?, ", ");
+        const toL = to.next().?[1..4];
+        const toR = to.next().?[0..3];
+        return Edge{ .from = from.*, .toL = toL.*, .toR = toR.* };
+    }
 };
 
 const NodePath = struct { from: Node, len: usize };
@@ -21,20 +31,10 @@ fn nextInstruction(instructions: Str, step: usize) usize {
     return 1;
 }
 
-fn parseEdge(line: Str) Edge {
-    var split = util.splitStr(line, " = ");
-    const from = split.next().?[0..3];
-
-    var to = util.splitStr(split.next().?, ", ");
-    const toL = to.next().?[1..4];
-    const toR = to.next().?[0..3];
-    return Edge{ .from = from.*, .toL = toL.*, .toR = toR.* };
-}
-
 pub fn buildG(input: Str, adj: *std.AutoHashMap(Node, std.ArrayList(Node)), allocator: Allocator) !void {
     var lines = util.splitStr(input, "\n");
     while (lines.next()) |line| {
-        var edge = parseEdge(line);
+        var edge = Edge.parse(line);
 
         var list = std.ArrayList(Node).init(allocator);
         try list.append(edge.toL);
