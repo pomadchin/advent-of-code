@@ -329,8 +329,15 @@ pub fn copyStr(dest: []u8, source: []const u8) void {
 
 pub fn concatSlices(comptime T: type, s1: []const T, s2: []const T, allocator: Allocator) ![]T {
     var res = try allocator.alloc(T, s1.len + s2.len);
-    for (s1, 0..) |e, i| res[i] = e;
-    for (s2, 0..) |e, i| res[i] = e;
+    var i: usize = 0;
+    for (s1) |e| {
+        res[i] = e;
+        i += 1;
+    }
+    for (s2) |e| {
+        res[i] = e;
+        i += 1;
+    }
     return res;
 }
 
