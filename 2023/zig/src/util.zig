@@ -54,6 +54,10 @@ pub const abs = std.math.absCast;
 
 pub const SplitStringIterator = std.mem.SplitIterator(u8, std.mem.DelimiterType.sequence);
 
+pub fn eqlStr(a: []const u8, b: []const u8) bool {
+    return eql(u8, a, b);
+}
+
 pub fn sliceContains(comptime T: type, slice: []const T, value: T) bool {
     for (slice) |e| if (e == value) return true;
     return false;

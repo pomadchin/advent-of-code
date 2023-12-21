@@ -32,7 +32,7 @@ const NRating = struct {
     pub fn split(self: *NRating, inst: Instruction, allocator: Allocator) !std.ArrayList(Out) {
         var res = std.ArrayList(Out).init(allocator);
 
-        if (util.eql(u8, inst.varName, "x") and inst.expr == '>') {
+        if (util.eqlStr(inst.varName, "x") and inst.expr == '>') {
             try res.append(.{ NRating{
                 .x = NRange{ .varName = "x", .min = self.x.min, .max = @min(self.x.max, inst.value) },
                 .m = self.m,
@@ -45,7 +45,7 @@ const NRating = struct {
                 .a = self.a,
                 .s = self.s,
             }, inst.to });
-        } else if (util.eql(u8, inst.varName, "x") and inst.expr == '<') {
+        } else if (util.eqlStr(inst.varName, "x") and inst.expr == '<') {
             try res.append(.{ NRating{
                 .x = NRange{ .varName = "x", .min = self.x.min, .max = @min(self.x.max, inst.value - 1) },
                 .m = self.m,
@@ -58,7 +58,7 @@ const NRating = struct {
                 .a = self.a,
                 .s = self.s,
             }, null });
-        } else if (util.eql(u8, inst.varName, "m") and inst.expr == '>') {
+        } else if (util.eqlStr(inst.varName, "m") and inst.expr == '>') {
             try res.append(.{ NRating{
                 .x = self.x,
                 .m = NRange{ .varName = "m", .min = self.m.min, .max = @min(self.m.max, inst.value) },
@@ -71,7 +71,7 @@ const NRating = struct {
                 .a = self.a,
                 .s = self.s,
             }, inst.to });
-        } else if (util.eql(u8, inst.varName, "m") and inst.expr == '<') {
+        } else if (util.eqlStr(inst.varName, "m") and inst.expr == '<') {
             try res.append(.{ NRating{
                 .x = self.x,
                 .m = NRange{ .varName = "m", .min = self.m.min, .max = @min(self.m.max, inst.value - 1) },
@@ -84,7 +84,7 @@ const NRating = struct {
                 .a = self.a,
                 .s = self.s,
             }, null });
-        } else if (util.eql(u8, inst.varName, "a") and inst.expr == '>') {
+        } else if (util.eqlStr(inst.varName, "a") and inst.expr == '>') {
             try res.append(.{ NRating{
                 .x = self.x,
                 .m = self.m,
@@ -97,7 +97,7 @@ const NRating = struct {
                 .a = NRange{ .varName = "a", .min = @max(self.a.min, inst.value + 1), .max = self.a.max },
                 .s = self.s,
             }, inst.to });
-        } else if (util.eql(u8, inst.varName, "a") and inst.expr == '<') {
+        } else if (util.eqlStr(inst.varName, "a") and inst.expr == '<') {
             try res.append(.{ NRating{
                 .x = self.x,
                 .m = self.m,
@@ -110,7 +110,7 @@ const NRating = struct {
                 .a = NRange{ .varName = "a", .min = @max(self.a.min, inst.value), .max = self.a.max },
                 .s = self.s,
             }, null });
-        } else if (util.eql(u8, inst.varName, "s") and inst.expr == '>') {
+        } else if (util.eqlStr(inst.varName, "s") and inst.expr == '>') {
             try res.append(.{ NRating{
                 .x = self.x,
                 .m = self.m,
@@ -123,7 +123,7 @@ const NRating = struct {
                 .a = self.a,
                 .s = NRange{ .varName = "s", .min = @max(self.s.min, inst.value + 1), .max = self.s.max },
             }, inst.to });
-        } else if (util.eql(u8, inst.varName, "s") and inst.expr == '<') {
+        } else if (util.eqlStr(inst.varName, "s") and inst.expr == '<') {
             try res.append(.{ NRating{
                 .x = self.x,
                 .m = self.m,
@@ -160,8 +160,8 @@ const Instruction = struct {
     to: Str,
 
     fn canProcessInternal(self: *const Instruction, n: Str, v: u64) bool {
-        if (util.eql(u8, self.varName, n) and self.expr == '>') return v > self.value;
-        if (util.eql(u8, self.varName, n) and self.expr == '<') return v < self.value;
+        if (util.eqlStr(self.varName, n) and self.expr == '>') return v > self.value;
+        if (util.eqlStr(self.varName, n) and self.expr == '<') return v < self.value;
 
         return false;
     }
