@@ -27,13 +27,13 @@ const Instruction = struct {
     }
 
     pub fn directionc(self: *Instruction) Point {
-        return switch (self.color[6]) {
-            '3' => Point{ .y = -1, .x = 0 },
-            '1' => Point{ .y = 1, .x = 0 },
-            '0' => Point{ .y = 0, .x = 1 },
-            '2' => Point{ .y = 0, .x = -1 },
-            else => Point{ .y = -99, .x = -99 },
-        };
+        return direction(switch (self.color[6]) {
+            '3' => 'U',
+            '1' => 'D',
+            '0' => 'R',
+            '2' => 'L',
+            else => self.color[6],
+        });
     }
 };
 
