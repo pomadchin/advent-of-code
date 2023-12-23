@@ -238,12 +238,9 @@ test "example-part2" {
     try util.expectEqual(expected, actual);
 }
 
-// takes ~20s with no -Doptimize=ReleaseFast flag
-// takes ~6s with -Doptimize=ReleaseFast
-// skip to make CI happy
-// test "input-part2" {
-//     const actual = try part2(@embedFile("input1.txt"));
-//     const expected = @as(usize, 6674);
+test "input-part2" {
+    const actual = try part2(@embedFile("input1.txt"));
+    const expected = @as(usize, 6674);
 
-//     try util.expectEqual(expected, actual);
-// }
+    try util.expectEqual(expected, actual);
+}
