@@ -1,6 +1,5 @@
 const std = @import("std");
 const util = @import("util");
-const queue = @import("queue");
 
 const Str = util.Str;
 const Allocator = std.mem.Allocator;
