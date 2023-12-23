@@ -129,5 +129,5 @@ jobs:
         run: cd 2023/zig; zig fmt --check src/*.zig && zig fmt --check src/*/*.zig
 
       - name: Build project
-        run: cd 2023/zig; zig build test_all
+        run: cd 2023/zig; zig build test_all -Doptimize=ReleaseFast
   
