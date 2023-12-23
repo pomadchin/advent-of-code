@@ -56,8 +56,6 @@ fn buildTiles(input: Str, tiles: *std.AutoHashMap(Pos, u8)) !Pos {
     return s;
 }
 
-pub fn main() !void {}
-
 pub fn part1(input: Str) !u64 {
     var arena = util.arena_gpa;
     defer arena.deinit();
@@ -96,6 +94,8 @@ pub fn part2(input: Str) !usize {
     _ = input;
     return 636350496972143;
 }
+
+pub fn main() !void {}
 
 test "example-part1" {
     const actual = try part1(@embedFile("example1.txt"));
