@@ -1,3 +1,4 @@
+// source https://www.huy.rocks/everyday/01-08-2022-zig-case-study-implementing-a-generic-stack
 const std = @import("std");
 const ArrayList = std.ArrayList;
 const Allocator = std.mem.Allocator;
@@ -25,9 +26,7 @@ pub fn Stack(comptime T: type) type {
         }
 
         pub fn top(self: *Self) ?T {
-            if (self.stack.items.len == 0) {
-                return null;
-            }
+            if (self.stack.items.len == 0) return null;
             return self.stack.items[self.stack.items.len - 1];
         }
 

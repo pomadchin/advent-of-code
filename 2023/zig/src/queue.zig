@@ -1,5 +1,4 @@
-// From https://ziglang.org/learn/samples/
-
+// source https://ziglang.org/learn/samples/
 const std = @import("std");
 
 pub fn Queue(comptime Child: type) type {

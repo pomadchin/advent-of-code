@@ -1,4 +1,4 @@
-// https://github.com/magurotuna/zig-deque/blob/b0ea92a8e36e995cbae3ce8f064ee11fa75a9675/src/deque.zig
+// source https://github.com/magurotuna/zig-deque/blob/b0ea92a8e36e995cbae3ce8f064ee11fa75a9675/src/deque.zig
 const std = @import("std");
 const mem = std.mem;
 const math = std.math;

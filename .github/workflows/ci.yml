@@ -104,52 +104,6 @@ jobs:
           command: test
           args: --manifest-path 2022/rust/Cargo.toml
 
-  build2023-rust:
-    name: Build and Test (Rust 2023)
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != 'pomadchin/advent-of-code'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-
-      - name: Set up cargo cache
-        uses: actions/cache@v3
-        continue-on-error: false
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            2023/rust/target/            
-          key: ${{ runner.os }}-cargo-${{ hashFiles('2023/rust/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-
-
-      - name: Decrypt GPG files
-        run: |
-          if compgen -G "2023/rust/src/*/*.gpg" > /dev/null; then
-            for file in 2023/rust/src/*/*.gpg; do 
-                output="${file%.*}"
-                echo "$output decrypted"
-                gpg --quiet --batch --yes --decrypt --passphrase="${{ secrets.GPG_PASSPHRASE_INPUTS }}" --output "$output" "$file"
-            done
-          fi
-      
-      - name: Check formatting
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --manifest-path 2023/rust/Cargo.toml --all -- --check
-
-      - name: Build project
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --manifest-path 2023/rust/Cargo.toml
-
   build2023-zig:
     name: Build and Test (Zig 2023)
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != 'pomadchin/advent-of-code'

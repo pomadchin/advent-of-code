@@ -113,8 +113,8 @@ fn dfs2(v: Pos, visited: *PLSet, tiles: *std.AutoHashMap(Pos, u8), adj: *PosA, e
     var res: usize = 0;
 
     try visited.put(v, {});
-    var neighborsV: std.AutoArrayHashMap(Pos, usize) = adj.get(v).?;
-    var it = neighborsV.iterator();
+    var adjv = adj.get(v).?;
+    var it = adjv.iterator();
     while (it.next()) |entry| {
         var n = entry.key_ptr.*;
         var dist = entry.value_ptr.*;
