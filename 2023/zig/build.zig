@@ -127,6 +127,11 @@ pub fn setup_module(
         .dependencies = &.{},
     });
 
+    const stack_module = b.createModule(.{
+        .source_file = .{ .path = "src/stack.zig" },
+        .dependencies = &.{},
+    });
+
     const bufIter_module = b.createModule(.{
         .source_file = .{ .path = "src/buf-iter.zig" },
         .dependencies = &.{},
@@ -138,11 +143,14 @@ pub fn setup_module(
     exe.addModule("queue", queue_module);
     unit_tests.addModule("queue", queue_module);
 
-    exe.addModule("buf-iter", bufIter_module);
-    unit_tests.addModule("buf-iter", bufIter_module);
-
     exe.addModule("deque", deque_module);
     unit_tests.addModule("deque", deque_module);
+
+    exe.addModule("stack", stack_module);
+    unit_tests.addModule("stack", stack_module);
+
+    exe.addModule("buf-iter", bufIter_module);
+    unit_tests.addModule("buf-iter", bufIter_module);
 
     const run_unit_tests = b.addRunArtifact(unit_tests);
 

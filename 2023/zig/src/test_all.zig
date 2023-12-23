@@ -14,6 +14,8 @@ test {
     _ = @import("util");
     _ = @import("buf-iter");
     _ = @import("queue");
+    _ = @import("deque");
+    _ = @import("stack");
     _ = @import("main.zig");
     _ = @import("day01/main.zig");
     _ = @import("day02/main.zig");
