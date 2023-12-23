@@ -54,8 +54,29 @@ pub const abs = std.math.absCast;
 
 pub const SplitStringIterator = std.mem.SplitIterator(u8, std.mem.DelimiterType.sequence);
 
+pub fn mergeMaps(comptime K: type, comptime V: type, m1: std.AutoHashMap(K, V), m2: std.AutoHashMap(K, V), allocator: Allocator) !std.AutoHashMap(K, V) {
+    var res = std.AutoHashMap(K, V).init(allocator);
+
+    {
+        var it = m1.iterator();
+        while (it.next()) |kv| try res.put(kv.key_ptr.*, kv.value_ptr.*);
+    }
+
+    {
+        var it = m2.iterator();
+        while (it.next()) |kv| try res.put(kv.key_ptr.*, kv.value_ptr.*);
+    }
+
+    return res;
+}
+
 pub fn eqlStr(a: []const u8, b: []const u8) bool {
     return eql(u8, a, b);
+}
+
+pub fn sliceContainsStruct(comptime T: type, slice: []const T, value: T) bool {
+    for (slice) |e| if (std.meta.eql(e, value)) return true;
+    return false;
 }
 
 pub fn sliceContains(comptime T: type, slice: []const T, value: T) bool {
