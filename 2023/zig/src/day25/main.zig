@@ -5,6 +5,9 @@ const Str = util.Str;
 
 pub fn part1(input: Str) !usize {
     _ = input;
+    // via networkx
+    // TODO: check https://jgrapht.org/
+    // zig needs a Graph library
     return 507626;
 }
 

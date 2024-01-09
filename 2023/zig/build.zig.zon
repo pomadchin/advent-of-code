@@ -1,0 +1,15 @@
+// https://zig.news/edyu/zig-package-manager-wtf-is-zon-558e
+.{
+    .name = "advent-of-code-2023",
+    .version = "0.0.1",
+
+    .dependencies = .{
+        // the name of the package
+        // .zap = .{
+        //     // the url to the release of the module
+        //     .url = "https://github.com/zigzap/zap/archive/refs/tags/v0.1.7-pre.tar.gz",
+        //     // the hash of the module, this is not the checksum of the tarball
+        //     .hash = "1220002d24d73672fe8b1e39717c0671598acc8ec27b8af2e1caf623a4fd0ce0d1bd",
+        // },
+    },
+}

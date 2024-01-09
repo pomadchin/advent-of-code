@@ -103,7 +103,8 @@ pub fn part1(input: Str, min: f64, max: f64) !usize {
 
 pub fn part2(input: Str) !usize {
     _ = input;
-    // I used sympy to solve equations ):
+    // via sympy
+    // TODO: use https://github.com/Z3Prover/z3 from zig?
     return 549873212220117;
 }
 
