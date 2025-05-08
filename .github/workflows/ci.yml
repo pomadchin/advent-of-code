@@ -27,6 +27,9 @@ jobs:
           distribution: ${{ matrix.distribution }}
           java-version: ${{ matrix.java }}
 
+      - name: Install sbt
+        uses: sbt/setup-sbt@v1
+
       - name: Check formatting
         run: cd 2021/scala; sbt scalafmtCheckAll
 
@@ -51,6 +54,9 @@ jobs:
         with:
           distribution: ${{ matrix.distribution }}
           java-version: ${{ matrix.java }}
+
+      - name: Install sbt
+        uses: sbt/setup-sbt@v1
 
       - name: Check formatting
         run: cd 2022/scala; sbt scalafmtCheckAll
